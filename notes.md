@@ -13,7 +13,8 @@ This file represents what I have learned about web programming.
 
 ## AWS
 
-Interesting things I have learned about AWS
+Set up my own instance for my server! Here is my current ip address: 32.193.170.171, and it is elastic. 
+http://32.193.170.171
 
 ## HTML
 
