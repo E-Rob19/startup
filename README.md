@@ -73,9 +73,9 @@ For this deliverable I did the following. I checked the box `[x]` and added a de
 
 For this deliverable I did the following. I checked the box `[x]` and added a description for things I completed.
 
-- [ ] **Rented EC2 server** - I did not complete this part of the deliverable.
-- [ ] **Leased domain name** - I did not complete this part of the deliverable.
-- [ ] **Server accessible** from my domain: [https://yourdomainnamehere.click](https://yourdomainnamehere.click) - I did not complete this part of the deliverable.
+- [x] **Rented EC2 server** - I rented an AWS EC2 instance using t3.nano to host my application server.
+- [x] **Leased domain name** - I leased the domain `earshot.click` and pointed its DNS to my EC2 instance.
+- [x] **Server accessible** from my domain: [https://earshot.click](https://earshot.click) - My placeholder web application is deployed and accessible over HTTPS, using Caddy as a reverse proxy to automatically provision and manage the TLS certificate.
 
 ## 🚀 HTML deliverable
 
