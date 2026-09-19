@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EarShot - Leaderboard</title>
+  <meta name="description" content="See how your ears stack up on the global EarShot leaderboard." />
+</head>
+<body>
+  <header>
+    <h1><img src="placeholder.png" alt="EarShot logo" width="40" height="40" /> EarShot</h1>
+    <nav>
+      <ul>
+        <li><a href="index.html">Play</a></li>
+        <li><a href="login.html">Login</a></li>
+        <li><a href="leaderboard.html">Leaderboard</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <section id="leaderboard">
+      <h2>Global Leaderboard</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Rank</th>
+            <th>Player</th>
+            <th>Score</th>
+            <th>Accuracy</th>
+            <th>Avg Time</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>1</td><td>frequencyfox</td><td>987</td><td>96%</td><td>1.8s</td></tr>
+          <tr><td>2</td><td>mixmaster_jo</td><td>951</td><td>94%</td><td>2.1s</td></tr>
+          <tr><td>3</td><td>ringout_ray</td><td>930</td><td>92%</td><td>2.4s</td></tr>
+        </tbody>
+      </table>
+      <p><small>Database placeholder: rows above stand in for scores that will be read from MongoDB.</small></p>
+    </section>
+
+    <section id="live-updates">
+      <h2>Live Standings</h2>
+      <p id="ws-status">Waiting for WebSocket connection&hellip;</p>
+      <p>
+        WebSocket placeholder: once a player finishes a round, their new score will appear here
+        in real time without needing to refresh the page.
+      </p>
+    </section>
+  </main>
+
+  <footer>
+    <p>&copy; 2026 EarShot. Built for CS 260.</p>
+    <p><a href="notes.md">Developer notes</a></p>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EarShot - Login</title>
+  <meta name="description" content="Login or create an account to compete on the EarShot leaderboard." />
+</head>
+<body>
+  <header>
+    <h1><img src="placeholder.png" alt="EarShot logo" width="40" height="40" /> EarShot</h1>
+    <nav>
+      <ul>
+        <li><a href="index.html">Play</a></li>
+        <li><a href="login.html">Login</a></li>
+        <li><a href="leaderboard.html">Leaderboard</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <section id="login">
+      <h2>Login</h2>
+      <form action="#" method="post">
+        <label for="username">Username</label>
+        <input type="text" id="username" name="username" required />
+
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" required />
+
+        <button type="submit">Login</button>
+      </form>
+      <p>Don't have an account? <a href="#">Create one</a></p>
+    </section>
+
+    <section id="security-note">
+      <h2>Secure by Default</h2>
+      <p>
+        Login traffic will be sent over HTTPS, and passwords will be hashed with BCrypt before
+        being stored in the database. Once authenticated, your saved rounds and personal history
+        will appear here.
+      </p>
+    </section>
+  </main>
+
+  <footer>
+    <p>&copy; 2026 EarShot. Built for CS 260.</p>
+    <p><a href="notes.md">Developer notes</a></p>
+  </footer>
+</body>
+</html>
