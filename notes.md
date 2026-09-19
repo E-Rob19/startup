@@ -18,7 +18,7 @@ http://32.193.170.171
 
 ## HTML
 
-Interesting things I have learned about HTML
+I have just gone through the learning ages on MasteryLS and have become a lot for familiar with how HTML pages are set up and formatted. I feel further hands on practice with HTML will bring me an even better grasp on things.
 
 ## React
 
