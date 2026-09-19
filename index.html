@@ -3,61 +3,64 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>EarShot - Play</title>
-  <meta name="description" content="EarShot ear training game - identify tones and frequencies against the clock." />
+  <title>EarShot - Login</title>
+  <meta name="description" content="Login to EarShot to train your ear and compete on the global leaderboard." />
 </head>
 <body>
   <header>
     <h1><img src="placeholder.png" alt="EarShot logo" width="40" height="40" /> EarShot</h1>
     <nav>
       <ul>
-        <li><a href="index.html">Play</a></li>
-        <li><a href="login.html">Login</a></li>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="game.html">Play</a></li>
         <li><a href="leaderboard.html">Leaderboard</a></li>
       </ul>
     </nav>
   </header>
 
   <main>
-    <section id="round-status">
-      <h2>Round in Progress</h2>
-      <p>Tone <span id="tone-number">1</span> of 10</p>
-      <progress value="1" max="10">10%</progress>
-      <button type="button">Play Tone</button>
-    </section>
-
-    <section id="guess-form">
-      <h2>Submit Your Guess</h2>
-      <form action="#" method="post">
-        <label for="frequency-guess">Frequency (Hz)</label>
-        <input type="number" id="frequency-guess" name="frequency-guess" placeholder="e.g. 440" min="20" max="20000" />
-        <button type="submit">Submit Guess</button>
-      </form>
-      <p>Round score, accuracy, and response time will be calculated and displayed here once all 10 tones are guessed.</p>
-    </section>
-
-    <section id="frequency-reference">
-      <h2>Frequency Reference</h2>
+    <section id="welcome">
+      <h2>Welcome to EarShot</h2>
       <p>
-        <em>Third-party API placeholder.</em> This panel will eventually pull note-to-frequency
-        data from an external audio reference API so players can cross-check standard pitches
-        while training. See
-        <a href="https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API" target="_blank" rel="noopener">MDN's Web Audio API docs</a>
-        for the browser-side tone generation this feature will build on.
+        Every live sound engineer knows the moment: you're ringing out a room before doors open,
+        and a frequency is feeding back somewhere in the mix, but which one is it? EarShot trains
+        your ear to answer that question instantly. Log in below to start training and see how
+        your ears stack up on the global leaderboard.
       </p>
-      <ul>
-        <li>A4 &mdash; 440 Hz</li>
-        <li>E2 &mdash; 82.41 Hz</li>
-        <li>C6 &mdash; 1046.5 Hz</li>
-      </ul>
     </section>
 
-    <section id="design-preview">
-      <h2>Design Sketch</h2>
-      <figure>
-        <img src="EarShotDesigns.jpg" alt="Rough sketch of the EarShot game and leaderboard screens" width="600" />
-        <figcaption>Early wireframes for the EarShot round and leaderboard screens.</figcaption>
-      </figure>
+    <section id="how-to-play">
+      <h2>How to Play</h2>
+      <ol>
+        <li>Log in with your account so your scores are saved to your history and the leaderboard.</li>
+        <li>Start a round. Each round serves 10 tones, either isolated or mixed with noise.</li>
+        <li>Listen to each tone and submit your best guess for its frequency.</li>
+        <li>After all 10 tones, your round is scored on accuracy and response time, with accuracy weighted more heavily.</li>
+        <li>Your score posts straight to the global leaderboard as soon as the round ends.</li>
+      </ol>
+    </section>
+
+    <section id="login">
+      <h2>Login</h2>
+      <form action="#" method="post">
+        <label for="username">Username</label>
+        <input type="text" id="username" name="username" required />
+
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" required />
+
+        <button type="submit">Login</button>
+      </form>
+      <p>Don't have an account? <a href="#">Create one</a></p>
+    </section>
+
+    <section id="security-note">
+      <h2>Secure by Default</h2>
+      <p>
+        Login traffic will be sent over HTTPS, and passwords will be hashed with BCrypt before
+        being stored in the database. Once authenticated, your saved rounds and personal history
+        will appear here.
+      </p>
     </section>
   </main>
 
