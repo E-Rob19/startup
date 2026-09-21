@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EarShot - Create Account</title>
+  <meta name="description" content="Create an EarShot account to save your scores and compete on the global leaderboard." />
+</head>
+<body>
+  <header>
+    <h1><img src="placeholder.png" alt="EarShot logo" width="40" height="40" /> EarShot</h1>
+    <nav>
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="game.html">Play</a></li>
+        <li><a href="leaderboard.html">Leaderboard</a></li>
+        <li><a href="profile.html">Profile</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <section id="create-account">
+      <h2>Create Account</h2>
+      <p class="placeholder-tag">[Placeholder: Authentication]</p>
+      <form action="#" method="post">
+        <label for="new-username">Username</label>
+        <input type="text" id="new-username" name="new-username" required />
+
+        <label for="new-password">Password</label>
+        <input type="password" id="new-password" name="new-password" required />
+
+        <label for="confirm-password">Confirm Password</label>
+        <input type="password" id="confirm-password" name="confirm-password" required />
+
+        <button type="submit">Create Account</button>
+      </form>
+      <p>Already have an account? <a href="login.html">Login</a></p>
+    </section>
+
+    <section id="security-note">
+      <h2>Secure by Default</h2>
+      <p>
+        Your password will be hashed with BCrypt before being stored, and all traffic to and
+        from EarShot is sent over HTTPS.
+      </p>
+    </section>
+  </main>
+
+  <footer>
+    <p>&copy; 2026 EarShot. Built for CS 260.</p>
+    <p><a href="notes.md">Developer notes</a></p>
+  </footer>
+</body>
+</html>

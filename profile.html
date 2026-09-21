@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EarShot - Profile</title>
+  <meta name="description" content="Track your personal EarShot round history and improvement over time." />
+</head>
+<body>
+  <header>
+    <h1><img src="placeholder.png" alt="EarShot logo" width="40" height="40" /> EarShot</h1>
+    <nav>
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="game.html">Play</a></li>
+        <li><a href="leaderboard.html">Leaderboard</a></li>
+        <li><a href="profile.html">Profile</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <section id="profile-header">
+      <h2><span id="profile-username">Guest</span>'s Profile</h2>
+      <p>Your personal round history and improvement over time will show up here once you're logged in.</p>
+    </section>
+
+    <section id="round-history">
+      <h2>Round History</h2>
+      <p class="placeholder-tag">[Placeholder: Database Data]</p>
+      <table>
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Score</th>
+            <th>Accuracy</th>
+            <th>Avg Time</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>2026-09-18</td><td>930</td><td>92%</td><td>2.4s</td></tr>
+          <tr><td>2026-09-15</td><td>875</td><td>88%</td><td>2.7s</td></tr>
+          <tr><td>2026-09-10</td><td>810</td><td>84%</td><td>3.1s</td></tr>
+        </tbody>
+      </table>
+      <p><small>Database placeholder: rows above stand in for this player's past rounds, which will be read from MongoDB.</small></p>
+    </section>
+  </main>
+
+  <footer>
+    <p>&copy; 2026 EarShot. Built for CS 260.</p>
+    <p><a href="notes.md">Developer notes</a></p>
+  </footer>
+</body>
+</html>

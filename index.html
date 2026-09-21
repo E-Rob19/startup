@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>EarShot - Login</title>
-  <meta name="description" content="Login to EarShot to train your ear and compete on the global leaderboard." />
+  <title>EarShot - Home</title>
+  <meta name="description" content="Train your ear to identify tones and compete on the global EarShot leaderboard." />
 </head>
 <body>
   <header>
@@ -14,6 +14,7 @@
         <li><a href="index.html">Home</a></li>
         <li><a href="game.html">Play</a></li>
         <li><a href="leaderboard.html">Leaderboard</a></li>
+        <li><a href="profile.html">Profile</a></li>
       </ul>
     </nav>
   </header>
@@ -24,8 +25,12 @@
       <p>
         Every live sound engineer knows the moment: you're ringing out a room before doors open,
         and a frequency is feeding back somewhere in the mix, but which one is it? EarShot trains
-        your ear to answer that question instantly. Log in below to start training and see how
-        your ears stack up on the global leaderboard.
+        your ear to answer that question instantly. Log in or create an account below to start
+        training and see how your ears stack up on the global leaderboard.
+      </p>
+      <p id="auth-actions">
+        <a href="login.html"><button type="button">Login</button></a>
+        <a href="create-account.html"><button type="button">Create Account</button></a>
       </p>
     </section>
 
@@ -40,46 +45,6 @@
       </ol>
     </section>
 
-    <section id="login">
-      <h2>Login</h2>
-      <p class="placeholder-tag">[Placeholder: Authentication]</p>
-      <form action="#" method="post">
-        <label for="username">Username</label>
-        <input type="text" id="username" name="username" required />
-
-        <label for="password">Password</label>
-        <input type="password" id="password" name="password" required />
-
-        <button type="submit">Login</button>
-      </form>
-      <p>Don't have an account? <a href="#create-account">Create one</a></p>
-    </section>
-
-    <section id="create-account">
-      <h2>Create Account</h2>
-      <p class="placeholder-tag">[Placeholder: Authentication]</p>
-      <form action="#" method="post">
-        <label for="new-username">Username</label>
-        <input type="text" id="new-username" name="new-username" required />
-
-        <label for="new-password">Password</label>
-        <input type="password" id="new-password" name="new-password" required />
-
-        <label for="confirm-password">Confirm Password</label>
-        <input type="password" id="confirm-password" name="confirm-password" required />
-
-        <button type="submit">Create Account</button>
-      </form>
-    </section>
-
-    <section id="security-note">
-      <h2>Secure by Default</h2>
-      <p>
-        Login traffic will be sent over HTTPS, and passwords will be hashed with BCrypt before
-        being stored in the database. Once authenticated, your saved rounds and personal history
-        will appear here.
-      </p>
-    </section>
   </main>
 
   <footer>
