@@ -1,6 +1,6 @@
 # EarShot
 
-[My Notes](notes.md) | [My website](https://earshot.click)
+[My Notes](notes.md) | [My website](https://startup.earshot.click) | [My Simon](https://simon.earshot.click)
 
 I want to make a webapp for ear training. I want to make a practice section, where you can train on recognizing tones, and a game section, where you can compete with others on the app. I want the game section to be graded on accuracy and time, and to have authentication of people using their own accounts. I want there to be a global leaderboard. I'm coming at this from an angle of live sound mixing, so I want the game to be focused on quickly and accurately identifying frequencies on their own as well as mixed with other noise (like in ringing out spaces when setting up a live sound system).
 
@@ -76,6 +76,7 @@ For this deliverable I did the following. I checked the box `[x]` and added a de
 - [x] **Rented EC2 server** - I rented an AWS EC2 instance using t3.nano to host my application server.
 - [x] **Leased domain name** - I leased the domain `earshot.click` and pointed its DNS to my EC2 instance.
 - [x] **Server accessible** from my domain: [https://earshot.click](https://earshot.click) - My placeholder web application is deployed and accessible over HTTPS, using Caddy as a reverse proxy to automatically provision and manage the TLS certificate.
+- **Note:** My startup and Simon are hosted on separate subdomains of the same EC2 instance: the startup app lives at [startup.earshot.click](https://startup.earshot.click) and Simon lives at [simon.earshot.click](https://simon.earshot.click).
 
 ## 🚀 HTML deliverable
 
