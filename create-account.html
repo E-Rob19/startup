@@ -24,15 +24,18 @@
       <h2>Create Account</h2>
       <p class="placeholder-tag">[Placeholder: Authentication]</p>
       <form action="#" method="post">
-        <label for="new-username">Username</label>
-        <input type="text" id="new-username" name="new-username" required />
-
-        <label for="new-password">Password</label>
-        <input type="password" id="new-password" name="new-password" required />
-
-        <label for="confirm-password">Confirm Password</label>
-        <input type="password" id="confirm-password" name="confirm-password" required />
-
+        <div>
+          <label for="new-username">Username</label>
+          <input type="text" id="new-username" name="new-username" required />
+        </div>
+        <div>
+          <label for="new-password">Password</label>
+          <input type="password" id="new-password" name="new-password" required />
+        </div>
+        <div>
+          <label for="confirm-password">Confirm Password</label>
+          <input type="password" id="confirm-password" name="confirm-password" required />
+        </div>
         <button type="submit">Create Account</button>
       </form>
       <p>Already have an account? <a href="login.html">Login</a></p>
