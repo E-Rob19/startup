@@ -82,15 +82,15 @@ For this deliverable I did the following. I checked the box `[x]` and added a de
 For this deliverable I did the following. I checked the box `[x]` and added a description for things I completed.
 
 - [ ] I completed the prerequisites for this deliverable (Simon deployed, GitHub link, Git commits)
-- [ ] **HTML pages** - I did not complete this part of the deliverable.
-- [ ] **Proper HTML element usage** - I did not complete this part of the deliverable.
-- [ ] **Links** - I did not complete this part of the deliverable.
-- [ ] **Text** - I did not complete this part of the deliverable.
-- [ ] **3rd party API placeholder** - I did not complete this part of the deliverable.
-- [ ] **Images** - I did not complete this part of the deliverable.
-- [ ] **Login placeholder** - I did not complete this part of the deliverable.
-- [ ] **DB data placeholder** - I did not complete this part of the deliverable.
-- [ ] **WebSocket placeholder** - I did not complete this part of the deliverable.
+- [x] **HTML pages** - Built six pages: `index.html` (home, with a welcome blurb, "How to Play" steps, and Login/Create Account buttons), `login.html`, `create-account.html`, `game.html` (the round page), `leaderboard.html`, and `profile.html` (personal round history).
+- [x] **Proper HTML element usage** - Used semantic elements throughout: `header`, `nav`, `main`, `section`, `footer`, `form`, `table`, `progress`, and `svg` for the tone visualizer.
+- [x] **Links** - Every page shares a nav linking Home/Play/Leaderboard/Profile; the login and create-account pages cross-link to each other; the home page links out to the GitHub repo and to MDN's Web Audio API docs.
+- [x] **Text** - Headings and paragraphs describe the elevator pitch, how to play steps, security notes, and placeholder explanations on each page.
+- [x] **3rd party API placeholder** - The "Frequency Reference" section on the home page marks where a note/frequency lookup API will be integrated later.
+- [x] **Images** - `placeholder.png` is used as the site logo in the header on every page.
+- [x] **Login placeholder** - `login.html` has a login form, and `create-account.html` has a matching signup form.
+- [x] **DB data placeholder** - The leaderboard table on `leaderboard.html` and the round history table on `profile.html` both stand in for data that will be read from the database.
+- [x] **WebSocket placeholder** - The "Live Standings" feed on `leaderboard.html` is a placeholder for the real-time score updates that will be pushed to players over a WebSocket connection once the backend is built.
 
 ## 🚀 CSS deliverable
 
