@@ -1,6 +1,6 @@
 # EarShot
 
-[My Notes](notes.md)
+[My Notes](notes.md) | [My website](https://earshot.click)
 
 I want to make a webapp for ear training. I want to make a practice section, where you can train on recognizing tones, and a game section, where you can compete with others on the app. I want the game section to be graded on accuracy and time, and to have authentication of people using their own accounts. I want there to be a global leaderboard. I'm coming at this from an angle of live sound mixing, so I want the game to be focused on quickly and accurately identifying frequencies on their own as well as mixed with other noise (like in ringing out spaces when setting up a live sound system).
 
@@ -81,7 +81,7 @@ For this deliverable I did the following. I checked the box `[x]` and added a de
 
 For this deliverable I did the following. I checked the box `[x]` and added a description for things I completed.
 
-- [ ] I completed the prerequisites for this deliverable (Simon deployed, GitHub link, Git commits)
+- [x] I completed the prerequisites for this deliverable (Simon deployed, GitHub link, Git commits)
 - [x] **HTML pages** - Built six pages: `index.html` (home, with a welcome blurb, "How to Play" steps, and Login/Create Account buttons), `login.html`, `create-account.html`, `game.html` (the round page), `leaderboard.html`, and `profile.html` (personal round history).
 - [x] **Proper HTML element usage** - Used semantic elements throughout: `header`, `nav`, `main`, `section`, `footer`, `form`, `table`, `progress`, and `svg` for the tone visualizer.
 - [x] **Links** - Every page shares a nav linking Home/Play/Leaderboard/Profile; the login and create-account pages cross-link to each other; the home page links out to the GitHub repo and to MDN's Web Audio API docs.
