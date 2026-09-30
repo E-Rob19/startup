@@ -20,6 +20,8 @@ http://32.193.170.171
 
 I have just gone through the learning ages on MasteryLS and have become a lot for familiar with how HTML pages are set up and formatted. I feel further hands on practice with HTML will bring me an even better grasp on things.
 
+I just finished going through the MasteryLS pages on CSS, including Bootstrap and Tailwind. I think I might use Bootstrap for this project because it feels like a good thing to know how to use and be familiar with. I also deployed simon CSS to my page.
+
 ## React
 
 Interesting things I have learned about React
