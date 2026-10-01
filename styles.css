@@ -152,34 +152,48 @@ button:hover {
 }
 
 #fader {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
   margin: 0.75rem 0 0.25rem 0;
 }
 
-.fader-end {
-  font-size: 0.85rem;
-  color: #666;
-  min-width: 2em;
+.tick-row {
+  position: relative;
+  height: 2.25rem;
+}
+
+.tick {
+  position: absolute;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transform: translateX(-50%);
+}
+
+.tick-label {
+  font-size: 0.7rem;
+  color: #555;
+  white-space: nowrap;
+  margin-bottom: 2px;
+}
+
+.tick-mark {
+  display: block;
+  width: 1px;
+  height: 5px;
+  background: #999;
+}
+
+.tick.major .tick-mark {
+  height: 9px;
+  background: #333;
 }
 
 #frequency-guess {
-  flex: 1;
   -webkit-appearance: none;
   appearance: none;
   width: 100%;
   height: 6px;
-  background: repeating-linear-gradient(
-    to right,
-    #222,
-    #222 2px,
-    transparent 2px,
-    transparent calc(100% / 8)
-  ), #ccc;
-  background-size: 100% 2px, 100% 100%;
-  background-position: center;
-  background-repeat: no-repeat;
+  background: #ccc;
   border-radius: 3px;
   outline: none;
 }
@@ -187,6 +201,7 @@ button:hover {
 #frequency-guess::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
+  box-sizing: border-box;
   width: 26px;
   height: 26px;
   border-radius: 50%;
@@ -196,6 +211,7 @@ button:hover {
 }
 
 #frequency-guess::-moz-range-thumb {
+  box-sizing: border-box;
   width: 26px;
   height: 26px;
   border-radius: 50%;

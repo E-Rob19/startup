@@ -49,31 +49,41 @@
       <form action="#" method="post">
         <label for="frequency-guess">Frequency (Hz)</label>
         <div id="fader">
-          <span class="fader-end">20</span>
+          <div class="tick-row" aria-hidden="true">
+            <span class="tick major" style="left: calc(13px + (100% - 26px) * 0.0000)"><span class="tick-label">20 Hz</span><span class="tick-mark"></span></span>
+            <span class="tick minor" style="left: calc(13px + (100% - 26px) * 0.0587)"><span class="tick-mark"></span></span>
+            <span class="tick minor" style="left: calc(13px + (100% - 26px) * 0.1003)"><span class="tick-mark"></span></span>
+            <span class="tick major" style="left: calc(13px + (100% - 26px) * 0.1326)"><span class="tick-label">50</span><span class="tick-mark"></span></span>
+            <span class="tick minor" style="left: calc(13px + (100% - 26px) * 0.1590)"><span class="tick-mark"></span></span>
+            <span class="tick minor" style="left: calc(13px + (100% - 26px) * 0.1814)"><span class="tick-mark"></span></span>
+            <span class="tick major" style="left: calc(13px + (100% - 26px) * 0.2330)"><span class="tick-label">100</span><span class="tick-mark"></span></span>
+            <span class="tick minor" style="left: calc(13px + (100% - 26px) * 0.3333)"><span class="tick-mark"></span></span>
+            <span class="tick minor" style="left: calc(13px + (100% - 26px) * 0.3920)"><span class="tick-mark"></span></span>
+            <span class="tick minor" style="left: calc(13px + (100% - 26px) * 0.4337)"><span class="tick-mark"></span></span>
+            <span class="tick major" style="left: calc(13px + (100% - 26px) * 0.4660)"><span class="tick-label">500</span><span class="tick-mark"></span></span>
+            <span class="tick major" style="left: calc(13px + (100% - 26px) * 0.5663)"><span class="tick-label">1k</span><span class="tick-mark"></span></span>
+            <span class="tick minor" style="left: calc(13px + (100% - 26px) * 0.6667)"><span class="tick-mark"></span></span>
+            <span class="tick minor" style="left: calc(13px + (100% - 26px) * 0.7254)"><span class="tick-mark"></span></span>
+            <span class="tick minor" style="left: calc(13px + (100% - 26px) * 0.7670)"><span class="tick-mark"></span></span>
+            <span class="tick major" style="left: calc(13px + (100% - 26px) * 0.7993)"><span class="tick-label">5k</span><span class="tick-mark"></span></span>
+            <span class="tick major" style="left: calc(13px + (100% - 26px) * 0.8997)"><span class="tick-label">10k</span><span class="tick-mark"></span></span>
+            <span class="tick major" style="left: calc(13px + (100% - 26px) * 1.0000)"><span class="tick-label">20k</span><span class="tick-mark"></span></span>
+          </div>
           <input
             type="range"
             id="frequency-guess"
-            name="frequency-guess"
-            min="20"
-            max="20000"
-            value="440"
+            min="0"
+            max="1000"
             step="1"
-            list="frequency-ticks"
-            oninput="document.getElementById('frequency-readout').textContent = this.value"
+            value="447"
+            oninput="
+              var freq = Math.round(20 * Math.pow(1000, this.value / 1000));
+              document.getElementById('frequency-readout').textContent = freq;
+              document.getElementById('frequency-guess-value').value = freq;
+            "
           />
-          <span class="fader-end">20k</span>
         </div>
-        <datalist id="frequency-ticks">
-          <option value="20"></option>
-          <option value="2500"></option>
-          <option value="5000"></option>
-          <option value="7500"></option>
-          <option value="10000"></option>
-          <option value="12500"></option>
-          <option value="15000"></option>
-          <option value="17500"></option>
-          <option value="20000"></option>
-        </datalist>
+        <input type="hidden" id="frequency-guess-value" name="frequency-guess" value="440" />
         <p id="frequency-value">Guess: <span id="frequency-readout">440</span> Hz</p>
         <button type="submit">Submit Guess</button>
       </form>
