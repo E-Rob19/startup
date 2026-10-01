@@ -13,7 +13,7 @@ body {
 }
 
 header {
-  background-color: #2b2d42;
+  background-color: #f7446a;
   color: #fff;
   padding: 1rem;
 }
@@ -54,7 +54,7 @@ section {
 }
 
 h2 {
-  border-bottom: 2px solid #2b2d42;
+  border-bottom: 2px solid #f7446a;
   padding-bottom: 0.25rem;
 }
 
@@ -88,7 +88,7 @@ label {
 }
 
 button {
-  background-color: #2b2d42;
+  background-color: #f7446a;
   color: #fff;
   border: none;
   padding: 0.5rem 1rem;
@@ -97,7 +97,7 @@ button {
 }
 
 button:hover {
-  background-color: #1f2133;
+  background-color: #cd3556;
 }
 
 footer {
