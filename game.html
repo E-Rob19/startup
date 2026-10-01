@@ -48,7 +48,33 @@
       <h2>Submit Your Guess</h2>
       <form action="#" method="post">
         <label for="frequency-guess">Frequency (Hz)</label>
-        <input type="number" id="frequency-guess" name="frequency-guess" placeholder="e.g. 440" min="20" max="20000" />
+        <div id="fader">
+          <span class="fader-end">20</span>
+          <input
+            type="range"
+            id="frequency-guess"
+            name="frequency-guess"
+            min="20"
+            max="20000"
+            value="440"
+            step="1"
+            list="frequency-ticks"
+            oninput="document.getElementById('frequency-readout').textContent = this.value"
+          />
+          <span class="fader-end">20k</span>
+        </div>
+        <datalist id="frequency-ticks">
+          <option value="20"></option>
+          <option value="2500"></option>
+          <option value="5000"></option>
+          <option value="7500"></option>
+          <option value="10000"></option>
+          <option value="12500"></option>
+          <option value="15000"></option>
+          <option value="17500"></option>
+          <option value="20000"></option>
+        </datalist>
+        <p id="frequency-value">Guess: <span id="frequency-readout">440</span> Hz</p>
         <button type="submit">Submit Guess</button>
       </form>
       <p>Round score, accuracy, and response time will be calculated and displayed here once all 10 tones are guessed.</p>
