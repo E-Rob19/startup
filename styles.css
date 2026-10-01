@@ -100,6 +100,57 @@ button:hover {
   background-color: #cd3556;
 }
 
+#login, #create-account {
+  max-width: 320px;
+}
+
+#login h2, #create-account h2 {
+  font-size: 2.75rem;
+  font-weight: normal;
+  border-bottom: none;
+  margin-bottom: 1.5rem;
+}
+
+#login form, #create-account form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  align-items: flex-start;
+}
+
+#login label, #create-account label {
+  font-size: 0.95rem;
+  margin-bottom: 0.15rem;
+}
+
+#login input, #create-account input {
+  width: 100%;
+  padding: 0.35rem 0.5rem;
+  border: none;
+  border-bottom: 2px solid #222;
+  background: transparent;
+  font-size: 1rem;
+}
+
+#login input:focus, #create-account input:focus {
+  outline: none;
+  border-bottom-color: #f7446a;
+}
+
+#login button, #create-account button {
+  background-color: #fff;
+  color: #222;
+  border: 2px solid #222;
+  border-radius: 6px;
+  padding: 0.3rem 1rem;
+  margin-top: 0.5rem;
+}
+
+#login button:hover, #create-account button:hover {
+  background-color: #222;
+  color: #fff;
+}
+
 footer {
   text-align: center;
   padding: 1rem;
