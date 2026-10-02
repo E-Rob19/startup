@@ -18,6 +18,15 @@ header {
   padding: 1rem;
 }
 
+#hero {
+  text-align: center;
+}
+
+#site-title {
+  font-size: 4rem;
+  margin: 1rem 0 0.5rem 0;
+}
+
 header h1 {
   margin: 0 0 0.5rem 0;
   display: flex;
