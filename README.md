@@ -97,13 +97,13 @@ For this deliverable I did the following. I checked the box `[x]` and added a de
 
 For this deliverable I did the following. I checked the box `[x]` and added a description for things I completed.
 
-- [ ] I completed the prerequisites for this deliverable (Simon deployed, GitHub link, Git commits)
-- [ ] **Visually appealing colors and layout. No overflowing elements.** - I did not complete this part of the deliverable.
-- [ ] **Use of a CSS framework** - I did not complete this part of the deliverable.
-- [ ] **All visual elements styled using CSS** - I did not complete this part of the deliverable.
-- [ ] **Responsive to window resizing using flexbox and/or grid display** - I did not complete this part of the deliverable.
-- [ ] **Use of a imported font** - I did not complete this part of the deliverable.
-- [ ] **Use of different types of selectors including element, class, ID, and pseudo selectors** - I did not complete this part of the deliverable.
+- [x] I completed the prerequisites for this deliverable (Simon deployed, GitHub link, Git commits)
+- [x] **Visually appealing colors and layout. No overflowing elements.** - Built a shared `styles.css` applied across all six pages, using a consistent pink/black brand palette (`#f7446a`) and the Quicksand font. Closed off overflow risks with a `clamp()`-based hero title, `max-width` rules on images/SVGs, Bootstrap `table-responsive` wrappers on the leaderboard and profile tables, and a media query that thins out the frequency slider's tick labels on narrow screens.
+- [x] **Use of a CSS framework** - Integrated Bootstrap 5.3.3 via CDN on every page: a responsive navbar component that collapses into a hamburger menu on small screens, Bootstrap buttons, striped/hover tables, a styled progress bar, and `form-control`/`form-label` classes on all inputs.
+- [x] **All visual elements styled using CSS** - Every element is styled, layering custom CSS on top of Bootstrap defaults: the navbar, buttons, forms, tables, the round progress bar, and a custom logarithmic-scale frequency slider (styled as a mixer-board fader with tick marks and labels) on the gameplay page.
+- [x] **Responsive to window resizing using flexbox and/or grid display** - Used flexbox for the responsive navbar (collapses below 768px), the login/create-account forms, the live-standings list, and the frequency slider's tick labels, with a media query to adjust tick label sizing on small screens.
+- [x] **Use of a imported font** - Imported Quicksand from Google Fonts and set it as the site-wide `font-family`.
+- [x] **Use of different types of selectors including element, class, ID, and pseudo selectors** - `styles.css` uses element selectors (`body`, `table`, `h2`), class selectors (`.btn-brand`, `.tick`, `.table-card`), ID selectors (`#login`, `#leaderboard`, `#frequency-guess`), and pseudo-selectors (`:hover`, `:focus`, `:first-child`, `:last-child`, plus vendor pseudo-elements for the range slider's thumb).
 
 ## 🚀 React part 1: Routing deliverable
 
