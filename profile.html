@@ -13,17 +13,33 @@
   <link rel="icon" type="image/png" href="EarShotLogo.png" />
 </head>
 <body>
-  <header>
-    <h1><img src="EarShotLogo.png" alt="EarShot logo" width="40" height="40" /> EarShot</h1>
-    <nav>
-      <ul>
-        <li><a href="index.html">Home</a></li>
-        <li><a href="game.html">Play</a></li>
-        <li><a href="leaderboard.html">Leaderboard</a></li>
-        <li><a href="profile.html">Profile</a></li>
-      </ul>
-    </nav>
-  </header>
+  <nav class="navbar navbar-expand-md navbar-dark" style="background-color: #f7446a;">
+    <div class="container-fluid">
+      <a class="navbar-brand d-flex align-items-center gap-2" href="index.html">
+        <img src="EarShotLogo.png" alt="EarShot logo" width="40" height="40" />
+        EarShot
+      </a>
+      <button
+        class="navbar-toggler"
+        type="button"
+        data-bs-toggle="collapse"
+        data-bs-target="#navMenu"
+        aria-controls="navMenu"
+        aria-expanded="false"
+        aria-label="Toggle navigation"
+      >
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navMenu">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+          <li class="nav-item"><a class="nav-link" href="game.html">Play</a></li>
+          <li class="nav-item"><a class="nav-link" href="leaderboard.html">Leaderboard</a></li>
+          <li class="nav-item"><a class="nav-link" href="profile.html">Profile</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
 
   <main>
     <section id="profile-header">
