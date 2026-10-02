@@ -65,17 +65,16 @@ label {
   margin-bottom: 0.25rem;
 }
 
-button {
+.btn-brand {
   background-color: #f7446a;
+  border-color: #f7446a;
   color: #fff;
-  border: none;
-  padding: 0.5rem 1rem;
-  cursor: pointer;
-  border-radius: 4px;
 }
 
-button:hover {
+.btn-brand:hover {
   background-color: #cd3556;
+  border-color: #cd3556;
+  color: #fff;
 }
 
 #login, #create-account {
