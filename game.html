@@ -55,7 +55,16 @@
     <section id="round-status">
       <h2>Round in Progress</h2>
       <p>Tone <span id="tone-number">1</span> of 10</p>
-      <progress value="1" max="10">10%</progress>
+      <div class="progress">
+        <div
+          class="progress-bar"
+          role="progressbar"
+          style="width: 10%; background-color: #f7446a;"
+          aria-valuenow="10"
+          aria-valuemin="0"
+          aria-valuemax="100"
+        ></div>
+      </div>
       <p id="countdown-timer">Time Left: <span id="time-left">0:10</span></p>
       <button type="button" class="btn btn-brand">Play Tone</button>
     </section>
@@ -63,7 +72,7 @@
     <section id="guess-form">
       <h2>Submit Your Guess</h2>
       <form action="#" method="post">
-        <label for="frequency-guess">Frequency (Hz)</label>
+        <label for="frequency-guess" class="form-label">Frequency (Hz)</label>
         <div id="fader">
           <div class="tick-row" aria-hidden="true">
             <span class="tick major" style="left: calc(13px + (100% - 26px) * 0.0000)"><span class="tick-label">20 Hz</span><span class="tick-mark"></span></span>

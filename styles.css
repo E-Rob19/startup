@@ -41,21 +41,6 @@ h2 {
   color: #888;
 }
 
-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-th, td {
-  border: 1px solid #ccc;
-  padding: 0.5rem;
-  text-align: left;
-}
-
-th {
-  background-color: #eee;
-}
-
 form div {
   margin-bottom: 0.75rem;
 }
@@ -101,17 +86,13 @@ label {
 }
 
 #login input, #create-account input {
-  width: 100%;
-  padding: 0.35rem 0.5rem;
-  border: none;
-  border-bottom: 2px solid #222;
-  background: transparent;
-  font-size: 1rem;
+  border: 2px solid #222;
+  border-radius: 6px;
 }
 
-#login input:focus, #create-account input:focus {
-  outline: none;
-  border-bottom-color: #f7446a;
+.form-control:focus {
+  border-color: #f7446a;
+  box-shadow: 0 0 0 0.2rem rgba(247, 68, 106, 0.25);
 }
 
 #login button, #create-account button {
@@ -169,6 +150,9 @@ label {
   border-collapse: separate;
   border-spacing: 0 0.6rem;
   width: 100%;
+  --bs-table-bg: #fff;
+  --bs-table-striped-bg: #fbe9ed;
+  --bs-table-hover-bg: #fbdbe2;
 }
 
 #leaderboard th {
@@ -182,7 +166,6 @@ label {
   border-top: 2px solid #222;
   border-bottom: 2px solid #222;
   padding: 0.6rem 0.8rem;
-  background: #fff;
 }
 
 #leaderboard td:first-child {
@@ -222,6 +205,9 @@ label {
 #round-history table {
   width: 100%;
   border-collapse: collapse;
+  --bs-table-bg: #fff;
+  --bs-table-striped-bg: #fbe9ed;
+  --bs-table-hover-bg: #fbdbe2;
 }
 
 #round-history th {
@@ -234,7 +220,6 @@ label {
 #round-history td {
   border: 1px solid #ccc;
   padding: 0.6rem 0.8rem;
-  background: #fff;
 }
 
 #countdown-timer {
