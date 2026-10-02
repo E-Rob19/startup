@@ -197,6 +197,11 @@ button:hover {
   background: #333;
 }
 
+#countdown-timer {
+  font-size: 1.3rem;
+  font-weight: 600;
+}
+
 #frequency-guess {
   -webkit-appearance: none;
   appearance: none;
