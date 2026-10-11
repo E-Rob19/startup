@@ -9,7 +9,6 @@
   "name": "startup",
   "version": "1.0.0",
   "description": "[My Notes](notes.md) | [My website](https://startup.earshot.click) | [My Simon](https://simon.earshot.click)",
-  "main": "index.js",
   "devDependencies": {
     "vite": "^8.3.4"
   },

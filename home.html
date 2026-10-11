@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EarShot - Home</title>
+  <meta name="description" content="Train your ear to identify tones and compete on the global EarShot leaderboard." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="icon" type="image/png" href="EarShotLogo.png" />
+</head>
+<body>
+  <nav class="navbar navbar-expand-md navbar-dark" style="background-color: #f7446a;">
+    <div class="container-fluid">
+      <a class="navbar-brand d-flex align-items-center gap-2" href="index.html">
+        <img src="EarShotLogo.png" alt="EarShot logo" width="40" height="40" />
+        EarShot
+      </a>
+      <button
+        class="navbar-toggler"
+        type="button"
+        data-bs-toggle="collapse"
+        data-bs-target="#navMenu"
+        aria-controls="navMenu"
+        aria-expanded="false"
+        aria-label="Toggle navigation"
+      >
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navMenu">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+          <li class="nav-item"><a class="nav-link" href="game.html">Play</a></li>
+          <li class="nav-item"><a class="nav-link" href="leaderboard.html">Leaderboard</a></li>
+          <li class="nav-item"><a class="nav-link" href="profile.html">Profile</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- TEMPORARY: remove this repo link once it's no longer needed for grading -->
+  <p id="repo-link" style="font-size: 1.3em;"><strong><a href="https://github.com/E-Rob19/startup" target="_blank" rel="noopener">View this project on GitHub</a></strong> </p>
+
+  <main>
+    <section id="hero">
+      <h1 id="site-title">EarShot</h1>
+      <svg id="tone-graphic" width="200" height="80" viewBox="0 0 200 80" role="img" aria-label="Waveform of the current tone">
+        <polyline points="0,40 20,10 40,70 60,10 80,70 100,10 120,70 140,10 160,70 180,40 200,40" fill="none" stroke="currentColor" stroke-width="3" />
+      </svg>
+    </section>
+
+    <section id="welcome">
+      <h2>Welcome to EarShot</h2>
+      <p>
+        Every live sound engineer knows the moment: you're ringing out a room before doors open,
+        and a frequency is feeding back somewhere in the mix, but which one is it? EarShot trains
+        your ear to answer that question instantly. Log in or create an account below to start
+        training and see how your ears stack up on the global leaderboard.
+      </p>
+      <p id="auth-actions">
+        <a href="login.html"><button type="button" class="btn btn-brand">Login</button></a>
+        <a href="create-account.html"><button type="button" class="btn btn-brand">Create Account</button></a>
+      </p>
+    </section>
+
+    <section id="how-to-play">
+      <h2>How to Play</h2>
+      <ol>
+        <li>Log in with your account so your scores are saved to your history and the leaderboard.</li>
+        <li>Start a round. Each round serves 10 tones, either isolated or mixed with noise.</li>
+        <li>Listen to each tone and submit your best guess for its frequency.</li>
+        <li>After all 10 tones, your round is scored on accuracy and response time, with accuracy weighted more heavily.</li>
+        <li>Your score posts straight to the global leaderboard as soon as the round ends.</li>
+      </ol>
+    </section>
+
+    <section id="frequency-reference">
+      <h2>Frequency Reference</h2>
+      <p class="placeholder-tag">[Placeholder: Third-Party API]</p>
+      <p>
+        This panel will eventually pull note-to-frequency
+        data from an external audio reference API so players can cross-check standard pitches
+        while training. See
+        <a href="https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API" target="_blank" rel="noopener">MDN's Web Audio API docs</a>
+        for the browser-side tone generation this feature will build on.
+      </p>
+      <ul>
+        <li>A4 &mdash; 440 Hz</li>
+        <li>E2 &mdash; 82.41 Hz</li>
+        <li>C6 &mdash; 1046.5 Hz</li>
+      </ul>
+      <form action="#" method="get">
+        <label for="note-lookup" class="form-label">Note (e.g. A4)</label>
+        <input type="text" id="note-lookup" name="note-lookup" placeholder="e.g. A4" class="form-control" />
+        <button type="button" class="btn btn-brand mt-2">Look Up Frequency</button>
+      </form>
+    </section>
+
+  </main>
+
+  <footer>
+    <p>2026 EarShot. Built for CS 260.</p>
+    <p><a href="notes.md">Developer notes</a></p>
+  </footer>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
