@@ -12,6 +12,12 @@ body {
   background-color: #fafafa;
 }
 
+.body {
+  display: flex;
+  flex-direction: column;
+  min-width: 375px;
+}
+
 img, svg {
   max-width: 100%;
   height: auto;
