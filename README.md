@@ -110,9 +110,9 @@ For this deliverable I did the following. I checked the box `[x]` and added a de
 For this deliverable I did the following. I checked the box `[x]` and added a description for things I completed.
 
 - [ ] I completed the prerequisites for this deliverable (Simon deployed, GitHub link, Git commits)
-- [ ] **Bundled using Vite** - I did not complete this part of the deliverable.
-- [ ] **Components** - I did not complete this part of the deliverable.
-- [ ] **Router** - I did not complete this part of the deliverable.
+- [x] **Bundled using Vite** - The app is built and served with Vite: `index.html` is the Vite entry point, loading `index.jsx`, which mounts the root `App` component from `src/app.jsx`. `package.json` has `dev`, `build`, and `preview` scripts that run Vite.
+- [x] **Components** - Broke the app into one component per page, each in its own directory under `src/`: `Home`, `Game`, `Login`, `CreateAccount`, `Leaderboard`, and `Profile`. `App` itself is a shell component that renders the shared navbar/footer and swaps in the current page's component.
+- [x] **Router** - Used `react-router-dom`'s `BrowserRouter`, `Routes`, and `Route` in `app.jsx` to map each page component to a path (`/`, `/game`, `/leaderboard`, `/profile`, `/login`, `/createAccount`), plus a catch-all `*` route rendering a `NotFound` component. The navbar's links use `NavLink` so navigating between pages doesn't trigger a full page reload.
 
 ## 🚀 React part 2: Reactivity deliverable
 
