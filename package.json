@@ -2,5 +2,27 @@
   "dependencies": {
     "bootstrap": "^5.3.8",
     "react-bootstrap": "^2.10.10"
-  }
+  },
+  "name": "startup",
+  "version": "1.0.0",
+  "description": "[My Notes](notes.md) | [My website](https://startup.earshot.click) | [My Simon](https://simon.earshot.click)",
+  "main": "index.js",
+  "devDependencies": {
+    "vite": "^8.3.4"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/E-Rob19/startup.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/E-Rob19/startup/issues"
+  },
+  "homepage": "https://github.com/E-Rob19/startup#readme"
 }
