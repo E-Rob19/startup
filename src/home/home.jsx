@@ -1,4 +1,5 @@
 import React from 'react';
+import { NavLink } from 'react-router-dom';
 
 export function Home() {
   return (
@@ -19,8 +20,8 @@ export function Home() {
           training and see how your ears stack up on the global leaderboard.
         </p>
         <p id="auth-actions">
-          <a href="login.html"><button type="button" className="btn btn-brand">Login</button></a>
-          <a href="create-account.html"><button type="button" className="btn btn-brand">Create Account</button></a>
+          <NavLink to="/login"><button type="button" className="btn btn-brand">Login</button></NavLink>
+          <NavLink to="/createAccount"><button type="button" className="btn btn-brand">Create Account</button></NavLink>
         </p>
       </section>
 
