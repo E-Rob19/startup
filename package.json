@@ -1,5 +1,6 @@
 {
   "dependencies": {
-    "give-me-a-joke": "^0.5.1"
+    "bootstrap": "^5.3.8",
+    "react-bootstrap": "^2.10.10"
   }
 }
