@@ -12,6 +12,8 @@ export function Home() {
           </a>
         </strong>
       </p>
+      {/* TEMPORARY: remove this line once it's no longer needed for grading */}
+      <p id="author-name">CS260 Startup: Emma Robinson</p>
 
       <main>
         <section id="hero">
