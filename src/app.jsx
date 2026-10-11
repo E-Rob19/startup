@@ -35,7 +35,15 @@ export default function App() {
           </Navbar>
         </header>
 
-        <main>App components go here</main>
+        <Routes>
+          <Route path="/" element={<Home />} exact />
+          <Route path="/game" element={<Game />} />
+          <Route path="/leaderboard" element={<Leaderboard />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/createAccount" element={<CreateAccount />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
 
         <footer className="container-fluid">
           <span className="text-reset">&copy; 2026 EarShot. Built for CS 260.</span>
@@ -46,4 +54,8 @@ export default function App() {
       </div>
     </BrowserRouter>
   );
+}
+
+function NotFound() {
+  return <main className="container-fluid bg-secondary text-center">404: Return to sender. Address unknown.</main>;
 }
