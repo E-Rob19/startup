@@ -1,7 +1,15 @@
 import React from 'react';
 import { Navbar, Nav, Container } from 'react-bootstrap';
+import { BrowserRouter, NavLink, Route, Routes } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './app.css';
+import { Home } from './home/home';
+import { Game } from './game/game';
+import { Leaderboard } from './leaderboard/leaderboard';
+import { Profile } from './profile/profile';
+import { Login } from './login/login';
+import { CreateAccount } from './createAccount/createAccount';
+
 
 export default function App() {
   return (
