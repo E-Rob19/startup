@@ -1,6 +1,6 @@
 import React from 'react';
 import { Navbar, Nav, Container } from 'react-bootstrap';
-import { BrowserRouter, NavLink, Route, Routes } from 'react-router-dom';
+import { BrowserRouter, Navigate, NavLink, Route, Routes } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './app.css';
 import { Home } from './home/home';
@@ -62,7 +62,16 @@ export default function App() {
           <Route path="/" element={<Home userName={userName} authState={authState} />} exact />
           <Route path="/game" element={<Game userName={userName} authState={authState} />} />
           <Route path="/leaderboard" element={<Leaderboard userName={userName} />} />
-          <Route path="/profile" element={<Profile userName={userName} authState={authState} />} />
+          <Route
+            path="/profile"
+            element={
+              authState === AuthState.Authenticated ? (
+                <Profile userName={userName} authState={authState} />
+              ) : (
+                <Navigate to="/login" replace />
+              )
+            }
+          />
           <Route path="/login" element={<Login userName={userName} authState={authState} onAuthChange={onAuthChange} />} />
           <Route
             path="/createAccount"

@@ -1,10 +1,19 @@
 import React from 'react';
+import { NavLink } from 'react-router-dom';
+import { AuthState } from '../login/authState';
 
 export function Game({ userName, authState }) {
   return (
     <main>
       <section id="player-status">
-        <p>Welcome back, <span id="username">{userName || 'Guest'}</span>!</p>
+        {authState === AuthState.Authenticated ? (
+          <p>Welcome back, <span id="username">{userName}</span>!</p>
+        ) : (
+          <p className="alert alert-warning" role="status">
+            Playing as guest. Your scores won't be saved.{' '}
+            <NavLink to="/login">Log in</NavLink> to get on the leaderboard.
+          </p>
+        )}
       </section>
 
       <section id="tone-visualizer">

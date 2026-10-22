@@ -1,7 +1,8 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
+import { AuthState } from '../login/authState';
 
-export function Home() {
+export function Home({ userName, authState }) {
   return (
     <>
       {/* TEMPORARY: remove this repo link once it's no longer needed for grading */}
@@ -28,13 +29,28 @@ export function Home() {
           <p>
             Every live sound engineer knows the moment: you're ringing out a room before doors open,
             and a frequency is feeding back somewhere in the mix, but which one is it? EarShot trains
-            your ear to answer that question instantly. Log in or create an account below to start
-            training and see how your ears stack up on the global leaderboard.
+            your ear to answer that question instantly.
           </p>
-          <p id="auth-actions">
-            <NavLink to="/login"><button type="button" className="btn btn-brand">Login</button></NavLink>
-            <NavLink to="/createAccount"><button type="button" className="btn btn-brand">Create Account</button></NavLink>
-          </p>
+          {authState === AuthState.Authenticated ? (
+            <>
+              <p>Welcome back, <strong>{userName}</strong>! Ready for another round?</p>
+              <p id="auth-actions">
+                <NavLink to="/game"><button type="button" className="btn btn-brand">Start Playing</button></NavLink>
+              </p>
+            </>
+          ) : (
+            <>
+              <p>
+                Log in or create an account below to start training and see how your ears stack up
+                on the global leaderboard, or jump straight in as a guest.
+              </p>
+              <p id="auth-actions">
+                <NavLink to="/login"><button type="button" className="btn btn-brand">Login</button></NavLink>
+                <NavLink to="/createAccount"><button type="button" className="btn btn-brand">Create Account</button></NavLink>
+                <NavLink to="/game"><button type="button" className="btn btn-outline-secondary">Play as Guest</button></NavLink>
+              </p>
+            </>
+          )}
         </section>
 
         <section id="how-to-play">

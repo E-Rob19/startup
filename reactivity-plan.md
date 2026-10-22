@@ -51,9 +51,9 @@ Commit after each step. Small commits also satisfy the "Git commits" prerequisit
 - [x] Remove the `[Placeholder: Authentication]` tags.
 
 ### Step 3: Guard the protected pages
-- [ ] If `Profile` is visited while logged out, redirect to `/login`.
-- [ ] `Game` stays open to guests. Show a banner when logged out: "Playing as guest. Your scores won't be saved. *Log in* to get on the leaderboard."
-- [ ] Home: replace the Login/Create Account buttons with "Welcome back, *name*" and a **Start Playing** button when logged in.
+- [x] If `Profile` is visited while logged out, redirect to `/login`.
+- [x] `Game` stays open to guests. Show a banner when logged out: "Playing as guest. Your scores won't be saved. *Log in* to get on the leaderboard."
+- [x] Home: replace the Login/Create Account buttons with "Welcome back, *name*" and a **Start Playing** button when logged in.
 
 ### Step 4: Audio engine (real, not mocked)
 - [ ] `src/game/audio.js`: create one shared `AudioContext` (it must be created or resumed after a user click, because browsers block autoplay).
