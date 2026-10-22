@@ -42,13 +42,13 @@ Commit after each step. Small commits also satisfy the "Git commits" prerequisit
 - [x] Logout: remove `userName` from localStorage, reset the state, and navigate home.
 
 ### Step 2: Login and Create Account
-- [ ] Turn the inputs into controlled components (`useState` for each field).
-- [ ] Create an `authService.js` mock with `register(user, pw)`, `login(user, pw)`, and `logout()`, backed by localStorage. Have each one return a Promise so it already looks like `fetch` and is easy to swap out later.
-- [ ] Create Account: check that the passwords match and the username isn't already taken, then call `register` and log the user in.
-- [ ] Login: check the credentials against the stored `users`.
-- [ ] Show error messages in the page through state, not `alert()`. Disable the submit button while fields are empty.
-- [ ] Use `useNavigate()` to go to `/game` after success.
-- [ ] Remove the `[Placeholder: Authentication]` tags.
+- [x] Turn the inputs into controlled components (`useState` for each field).
+- [x] Create an `authService.js` mock with `register(user, pw)`, `login(user, pw)`, and `logout()`, backed by localStorage. Have each one return a Promise so it already looks like `fetch` and is easy to swap out later.
+- [x] Create Account: check that the passwords match and the username isn't already taken, then call `register` and log the user in.
+- [x] Login: check the credentials against the stored `users`.
+- [x] Show error messages in the page through state, not `alert()`. Disable the submit button while fields are empty.
+- [x] Use `useNavigate()` to go to `/game` after success.
+- [x] Remove the `[Placeholder: Authentication]` tags.
 
 ### Step 3: Guard the protected pages
 - [ ] If `Profile` is visited while logged out, redirect to `/login`.

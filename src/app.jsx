@@ -10,6 +10,7 @@ import { Profile } from './profile/profile';
 import { Login } from './login/login';
 import { CreateAccount } from './createAccount/createAccount';
 import { AuthState } from './login/authState';
+import { logout } from './services/authService';
 
 
 export default function App() {
@@ -22,8 +23,8 @@ export default function App() {
     setAuthState(authState);
   }
 
-  function logout() {
-    localStorage.removeItem('userName');
+  function handleLogout() {
+    logout();
     onAuthChange('', AuthState.Unauthenticated);
   }
 
@@ -47,7 +48,7 @@ export default function App() {
                     <NavLink className="nav-link" to="profile">Profile</NavLink>
                   )}
                   {authState === AuthState.Authenticated ? (
-                    <NavLink className="nav-link" to="/" onClick={logout}>Logout</NavLink>
+                    <NavLink className="nav-link" to="/" onClick={handleLogout}>Logout</NavLink>
                   ) : (
                     <NavLink className="nav-link" to="login">Login</NavLink>
                   )}
