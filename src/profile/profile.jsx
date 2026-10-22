@@ -1,10 +1,10 @@
 import React from 'react';
 
-export function Profile() {
+export function Profile({ userName, authState }) {
   return (
     <main>
       <section id="profile-header">
-        <h2><span id="profile-username">Guest</span>'s Profile</h2>
+        <h2><span id="profile-username">{userName || 'Guest'}</span>'s Profile</h2>
         <p>Your personal round history and improvement over time will show up here once you're logged in.</p>
       </section>
 

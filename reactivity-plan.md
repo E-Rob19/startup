@@ -35,11 +35,11 @@ Keep the mocks in their own small modules (for example `src/services/`) so the S
 Commit after each step. Small commits also satisfy the "Git commits" prerequisite.
 
 ### Step 1: Auth state in `App`
-- [ ] Add an `AuthState` enum (`Unknown`, `Authenticated`, `Unauthenticated`), the same pattern Simon uses.
-- [ ] In `App`, `useState` for `userName`, initialized from `localStorage.getItem('userName')`, and derive `authState` from it.
-- [ ] Pass `userName` and an `onAuthChange(userName, authState)` callback down to `Login`, `CreateAccount`, `Home`, `Game`, and `Profile`.
-- [ ] Navbar: always show **Play** (guests can play). Show **Profile** only when authenticated. Show **Logout** when logged in and **Login** when not.
-- [ ] Logout: remove `userName` from localStorage, reset the state, and navigate home.
+- [x] Add an `AuthState` enum (`Unknown`, `Authenticated`, `Unauthenticated`), the same pattern Simon uses.
+- [x] In `App`, `useState` for `userName`, initialized from `localStorage.getItem('userName')`, and derive `authState` from it.
+- [x] Pass `userName` and an `onAuthChange(userName, authState)` callback down to `Login`, `CreateAccount`, `Home`, `Game`, and `Profile`.
+- [x] Navbar: always show **Play** (guests can play). Show **Profile** only when authenticated. Show **Logout** when logged in and **Login** when not.
+- [x] Logout: remove `userName` from localStorage, reset the state, and navigate home.
 
 ### Step 2: Login and Create Account
 - [ ] Turn the inputs into controlled components (`useState` for each field).

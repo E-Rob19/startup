@@ -9,9 +9,24 @@ import { Leaderboard } from './leaderboard/leaderboard';
 import { Profile } from './profile/profile';
 import { Login } from './login/login';
 import { CreateAccount } from './createAccount/createAccount';
+import { AuthState } from './login/authState';
 
 
 export default function App() {
+  const [userName, setUserName] = React.useState(localStorage.getItem('userName') || '');
+  const currentAuthState = userName ? AuthState.Authenticated : AuthState.Unauthenticated;
+  const [authState, setAuthState] = React.useState(currentAuthState);
+
+  function onAuthChange(userName, authState) {
+    setUserName(userName);
+    setAuthState(authState);
+  }
+
+  function logout() {
+    localStorage.removeItem('userName');
+    onAuthChange('', AuthState.Unauthenticated);
+  }
+
   return (
     <BrowserRouter>
       <div className="body">
@@ -28,7 +43,14 @@ export default function App() {
                   <NavLink className="nav-link" to="/">Home</NavLink>
                   <NavLink className="nav-link" to="game">Play</NavLink>
                   <NavLink className="nav-link" to="leaderboard">Leaderboard</NavLink>
-                  <NavLink className="nav-link" to="profile">Profile</NavLink>
+                  {authState === AuthState.Authenticated && (
+                    <NavLink className="nav-link" to="profile">Profile</NavLink>
+                  )}
+                  {authState === AuthState.Authenticated ? (
+                    <NavLink className="nav-link" to="/" onClick={logout}>Logout</NavLink>
+                  ) : (
+                    <NavLink className="nav-link" to="login">Login</NavLink>
+                  )}
                 </Nav>
               </Navbar.Collapse>
             </Container>
@@ -36,12 +58,15 @@ export default function App() {
         </header>
 
         <Routes>
-          <Route path="/" element={<Home />} exact />
-          <Route path="/game" element={<Game />} />
-          <Route path="/leaderboard" element={<Leaderboard />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/createAccount" element={<CreateAccount />} />
+          <Route path="/" element={<Home userName={userName} authState={authState} />} exact />
+          <Route path="/game" element={<Game userName={userName} authState={authState} />} />
+          <Route path="/leaderboard" element={<Leaderboard userName={userName} />} />
+          <Route path="/profile" element={<Profile userName={userName} authState={authState} />} />
+          <Route path="/login" element={<Login userName={userName} authState={authState} onAuthChange={onAuthChange} />} />
+          <Route
+            path="/createAccount"
+            element={<CreateAccount userName={userName} authState={authState} onAuthChange={onAuthChange} />}
+          />
           <Route path="*" element={<NotFound />} />
         </Routes>
 

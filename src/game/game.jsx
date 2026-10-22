@@ -1,10 +1,10 @@
 import React from 'react';
 
-export function Game() {
+export function Game({ userName, authState }) {
   return (
     <main>
       <section id="player-status">
-        <p>Welcome back, <span id="username">Guest</span>!</p>
+        <p>Welcome back, <span id="username">{userName || 'Guest'}</span>!</p>
       </section>
 
       <section id="tone-visualizer">
