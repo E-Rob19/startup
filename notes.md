@@ -24,4 +24,4 @@ I just finished going through the MasteryLS pages on CSS, including Bootstrap an
 
 ## React
 
-Interesting things I have learned about React
+just deployed the second half of Simon React. Can play the game now! how fun
