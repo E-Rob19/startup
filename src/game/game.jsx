@@ -2,6 +2,7 @@ import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { AuthState } from '../login/authState';
 import { playTone, randomFrequency, stopTone } from './audio';
+import { ACCURACY_WEIGHT, MAX_SCORE, SPEED_WEIGHT, scoreRound } from './scoring';
 
 const TONES_PER_ROUND = 10;
 const CLEAR_TONES = 5;
@@ -33,6 +34,16 @@ function sliderToFreq(pos) {
 function formatTimeLeft(ms) {
   const seconds = Math.ceil(ms / 1000);
   return `0:${String(seconds).padStart(2, '0')}`;
+}
+
+// 0.874 → "87%"
+function formatPercent(fraction) {
+  return `${Math.round(fraction * 100)}%`;
+}
+
+// 2345 → "2.3s"
+function formatSeconds(ms) {
+  return `${(ms / 1000).toFixed(1)}s`;
 }
 
 // First CLEAR_TONES tones are clear, the rest have noise.
@@ -127,6 +138,7 @@ export function Game({ userName, authState }) {
   const currentTarget = targets[toneIndex];
   const isBetweenTones = phase === 'betweenTones';
   const lastGuess = guesses[guesses.length - 1];
+  const results = phase === 'finished' ? scoreRound(guesses, TIME_LIMIT_MS) : null;
 
   // Plays a tone, then keeps the Play button disabled for a short cooldown.
   // playId makes sure an older, cut-off tone can't re-enable the button
@@ -272,10 +284,22 @@ export function Game({ userName, authState }) {
         </>
       )}
 
-      {phase === 'finished' && (
+      {results && (
         <section id="round-results">
           <h2>Round Complete!</h2>
-          {/* Step 7 replaces this table with the full scored results screen. */}
+          <p id="final-score">
+            {results.score} <small>/ {MAX_SCORE}</small>
+          </p>
+          <p>
+            Accuracy: <strong>{formatPercent(results.accuracy)}</strong> · Avg time:{' '}
+            <strong>{formatSeconds(results.avgTimeMs)}</strong>
+          </p>
+          <p>
+            <small>
+              Score = {formatPercent(ACCURACY_WEIGHT)} accuracy + {formatPercent(SPEED_WEIGHT)} speed. Speed
+              only counts as much as each guess was accurate, and a guess one octave or more off counts as 0%.
+            </small>
+          </p>
           <div className="table-responsive">
             <table className="table table-striped table-hover">
               <thead>
@@ -284,23 +308,28 @@ export function Game({ userName, authState }) {
                   <th>Type</th>
                   <th>Target</th>
                   <th>Your Guess</th>
+                  <th>Accuracy</th>
                   <th>Time</th>
                 </tr>
               </thead>
               <tbody>
-                {guesses.map((g, i) => (
+                {results.tones.map((t, i) => (
                   <tr key={i}>
                     <td>{i + 1}</td>
-                    <td>{g.withNoise ? 'Noise' : 'Clear'}</td>
-                    <td>{g.target} Hz</td>
-                    <td>{g.guess} Hz</td>
-                    <td>{(g.timeMs / 1000).toFixed(1)}s</td>
+                    <td>{t.withNoise ? 'Noise' : 'Clear'}</td>
+                    <td>{t.target} Hz</td>
+                    <td>{t.guess} Hz</td>
+                    <td>{formatPercent(t.accuracy)}</td>
+                    <td>{t.timedOut ? "Time's up" : formatSeconds(t.timeMs)}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
-          <button type="button" className="btn btn-brand" onClick={startRound}>Play Again</button>
+          <p id="results-actions">
+            <button type="button" className="btn btn-brand" onClick={startRound}>Play Again</button>{' '}
+            <NavLink to="/leaderboard"><button type="button" className="btn btn-outline-secondary">View Leaderboard</button></NavLink>
+          </p>
         </section>
       )}
     </main>

@@ -288,3 +288,15 @@ footer {
   color: #666;
   font-size: 0.9rem;
 }
+
+#final-score {
+  font-size: 3rem;
+  font-weight: 700;
+  color: #f7446a;
+  margin-bottom: 0.25rem;
+}
+
+#final-score small {
+  font-size: 1.25rem;
+  color: #666;
+}

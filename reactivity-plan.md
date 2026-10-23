@@ -84,11 +84,12 @@ Use `useState` for the round phase: `idle → playing → guessing → … → f
 - [x] **Added after testing:** a 1.5 s pause between tones (and before the results), with controls disabled, so the next tone isn't jarring and a late click can't answer it.
 
 ### Step 7: Scoring
-- [ ] Per-tone accuracy from the error in octaves: `err = |log2(guess / target)|`. Measuring in octaves is fair across the whole spectrum, so being off by 100 Hz at 8 kHz counts as close but at 100 Hz counts as way off.
+- [x] Per-tone accuracy from the error in octaves: `err = |log2(guess / target)|`. Measuring in octaves is fair across the whole spectrum, so being off by 100 Hz at 8 kHz counts as close but at 100 Hz counts as way off.
   - Example: `accuracy = max(0, 1 - err / 1)`, which gives 100% for exact, 67% at 1/3 octave off, and 0% at a full octave or more.
-- [ ] Per-tone speed score: `max(0, 1 - timeMs / 10000)`.
-- [ ] Round score = `1000 × (0.7 × avgAccuracy + 0.3 × avgSpeed)`. Accuracy is weighted higher, as the README promises.
-- [ ] Results screen: total score, accuracy %, average time, and a per-tone breakdown table (target vs. guess). Then **Play Again** and **View Leaderboard** buttons.
+- [x] Per-tone speed score: `max(0, 1 - timeMs / 10000)`.
+- [x] Round score = `1000 × (0.7 × avgAccuracy + 0.3 × avgSpeed)`. Accuracy is weighted higher, as the README promises.
+  - **Changed after testing:** each tone's speed is multiplied by its accuracy (`speed × accuracy`), so fast wrong answers earn no speed points.
+- [x] Results screen: total score, accuracy %, average time, and a per-tone breakdown table (target vs. guess). Then **Play Again** and **View Leaderboard** buttons.
 
 ### Step 8: Save scores
 - [ ] `scoreService.js` with `saveScore(entry)`, `getLeaderboard()` (sort by score descending, top 10), and `getHistory(userName)` (filter by name, newest first).
