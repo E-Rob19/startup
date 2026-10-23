@@ -47,11 +47,6 @@ h2 {
   padding-bottom: 0.25rem;
 }
 
-.placeholder-tag {
-  font-style: italic;
-  color: #888;
-}
-
 form div {
   margin-bottom: 0.75rem;
 }
@@ -115,9 +110,14 @@ label {
   margin-top: 0.5rem;
 }
 
-#login button:hover, #create-account button:hover {
+#login button:hover:not(:disabled), #create-account button:hover:not(:disabled) {
   background-color: #222;
   color: #fff;
+}
+
+#login button:disabled, #create-account button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 #fader {

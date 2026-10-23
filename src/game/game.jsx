@@ -351,7 +351,7 @@ export function Game({ userName, authState }) {
           </div>
           <p id="results-actions">
             <button type="button" className="btn btn-brand" onClick={startRound}>Play Again</button>{' '}
-            <NavLink to="/leaderboard"><button type="button" className="btn btn-outline-secondary">View Leaderboard</button></NavLink>
+            <NavLink to="/leaderboard" className="btn btn-outline-secondary">View Leaderboard</NavLink>
           </p>
         </section>
       )}

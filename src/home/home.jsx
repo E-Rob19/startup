@@ -60,8 +60,8 @@ export function Home({ userName, authState }) {
           {authState === AuthState.Authenticated ? (
             <>
               <p>Welcome back, <strong>{userName}</strong>! Ready for another round?</p>
-              <p id="auth-actions">
-                <NavLink to="/game"><button type="button" className="btn btn-brand">Start Playing</button></NavLink>
+              <p id="auth-actions" className="d-flex flex-wrap gap-2">
+                <NavLink to="/game" className="btn btn-brand">Start Playing</NavLink>
               </p>
             </>
           ) : (
@@ -70,10 +70,10 @@ export function Home({ userName, authState }) {
                 Log in or create an account below to start training and see how your ears stack up
                 on the global leaderboard, or jump straight in as a guest.
               </p>
-              <p id="auth-actions">
-                <NavLink to="/login"><button type="button" className="btn btn-brand">Login</button></NavLink>
-                <NavLink to="/createAccount"><button type="button" className="btn btn-brand">Create Account</button></NavLink>
-                <NavLink to="/game"><button type="button" className="btn btn-outline-secondary">Play as Guest</button></NavLink>
+              <p id="auth-actions" className="d-flex flex-wrap gap-2">
+                <NavLink to="/login" className="btn btn-brand">Login</NavLink>
+                <NavLink to="/createAccount" className="btn btn-brand">Create Account</NavLink>
+                <NavLink to="/game" className="btn btn-outline-secondary">Play as Guest</NavLink>
               </p>
             </>
           )}

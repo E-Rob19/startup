@@ -59,24 +59,21 @@ export default function App() {
         </header>
 
         <Routes>
-          <Route path="/" element={<Home userName={userName} authState={authState} />} exact />
+          <Route path="/" element={<Home userName={userName} authState={authState} />} />
           <Route path="/game" element={<Game userName={userName} authState={authState} />} />
           <Route path="/leaderboard" element={<Leaderboard userName={userName} />} />
           <Route
             path="/profile"
             element={
               authState === AuthState.Authenticated ? (
-                <Profile userName={userName} authState={authState} />
+                <Profile userName={userName} />
               ) : (
                 <Navigate to="/login" replace />
               )
             }
           />
-          <Route path="/login" element={<Login userName={userName} authState={authState} onAuthChange={onAuthChange} />} />
-          <Route
-            path="/createAccount"
-            element={<CreateAccount userName={userName} authState={authState} onAuthChange={onAuthChange} />}
-          />
+          <Route path="/login" element={<Login onAuthChange={onAuthChange} />} />
+          <Route path="/createAccount" element={<CreateAccount onAuthChange={onAuthChange} />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
 

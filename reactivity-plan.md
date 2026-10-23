@@ -117,9 +117,10 @@ Use `useState` for the round phase: `idle → playing → guessing → … → f
 - [x] **Extra:** a short fake delay ("Looking up…") and a **Play** button that plays the looked-up note.
 
 ### Step 12: Cleanup and deploy
-- [ ] Search for leftover `placeholder-tag`s, `action="#"`, and `document.getElementById` calls.
+- [x] Search for leftover `placeholder-tag`s, `action="#"`, and `document.getElementById` calls. (Also: removed unused CSS and props, fixed buttons nested in links, disabled-button styling, tab title.)
 - [ ] Test the whole flow in a private window (empty localStorage): create account → play a round → score shows up on the leaderboard and profile → logout → protected pages redirect.
-- [ ] Run `npm run build` and fix any warnings, then deploy with `./deployReact.sh`.
+- [x] Run `npm run build` and fix any warnings. (Clean: the only warnings are harmless "use client" notes from react-router and react-bootstrap.)
+- [ ] Deploy with `./deployReact.sh` (you, by hand).
 - [ ] Update the README's React Part 2 section (you'll write this one yourself).
 
 ---
