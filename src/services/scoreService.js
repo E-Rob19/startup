@@ -6,7 +6,8 @@ const SCORES_KEY = 'earshot.scores';
 const LEADERBOARD_SIZE = 10;
 
 // Fake players so the leaderboard isn't empty in a fresh browser.
-const SEED_SCORES = [
+// Also used by gameNotifier as the fake players' skill levels.
+export const SEED_SCORES = [
   { name: 'frequencyfox', score: 912, accuracy: 0.95, avgTimeMs: 2800, date: '2026-09-18T19:42:00.000Z' },
   { name: 'mixmaster_jo', score: 874, accuracy: 0.92, avgTimeMs: 3400, date: '2026-09-17T15:10:00.000Z' },
   { name: 'ringout_ray', score: 851, accuracy: 0.91, avgTimeMs: 4100, date: '2026-09-15T22:05:00.000Z' },

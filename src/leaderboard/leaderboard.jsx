@@ -1,17 +1,33 @@
 import React from 'react';
 import { getLeaderboard } from '../services/scoreService';
-import { formatPercent, formatSeconds } from '../format';
+import { GameNotifier } from '../services/gameNotifier';
+import { formatPercent, formatSeconds, formatTime } from '../format';
 
 export function Leaderboard({ userName }) {
   const [scores, setScores] = React.useState(null); // null while loading
+  const [feed, setFeed] = React.useState(() => GameNotifier.getRecentEvents());
 
+  // Load the leaderboard, then listen for live events. Each event updates the
+  // feed and reloads the table, since the new round may change the standings.
   React.useEffect(() => {
     let ignore = false;
-    getLeaderboard().then((leaderboard) => {
-      if (!ignore) setScores(leaderboard);
-    });
+
+    function loadLeaderboard() {
+      getLeaderboard().then((leaderboard) => {
+        if (!ignore) setScores(leaderboard);
+      });
+    }
+
+    function handleGameEvent() {
+      setFeed(GameNotifier.getRecentEvents());
+      loadLeaderboard();
+    }
+
+    loadLeaderboard();
+    GameNotifier.addHandler(handleGameEvent);
     return () => {
       ignore = true;
+      GameNotifier.removeHandler(handleGameEvent);
     };
   }, []);
 
@@ -57,16 +73,18 @@ export function Leaderboard({ userName }) {
 
       <section id="live-updates">
         <h2>Live Standings</h2>
-        <p className="placeholder-tag">[Placeholder: WebSocket Data]</p>
-        <ul id="live-feed">
-          <li>frequencyfox just finished a round with a score of 987.</li>
-          <li>mixmaster_jo just finished a round with a score of 951.</li>
-          <li>ringout_ray just finished a round with a score of 930.</li>
-        </ul>
-        <p>
-          <small>WebSocket placeholder: the entries above simulate the realtime feed that will update
-          as soon as a player finishes a round, without needing to refresh the page.</small>
-        </p>
+        {feed.length === 0 ? (
+          <p>Waiting for players to finish rounds…</p>
+        ) : (
+          <ul id="live-feed">
+            {feed.map((event) => (
+              <li key={`${event.time}-${event.value.name}`}>
+                <strong>{event.value.name === userName ? 'You' : event.value.name}</strong> just finished a round
+                with a score of {event.value.score}. <small>{formatTime(event.time)}</small>
+              </li>
+            ))}
+          </ul>
+        )}
       </section>
     </main>
   );

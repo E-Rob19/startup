@@ -10,6 +10,11 @@ export function formatSeconds(ms) {
   return `${(ms / 1000).toFixed(1)}s`;
 }
 
+// "2026-10-22T18:00:05.000Z" → "11:00:05 AM" (in the viewer's own locale and time zone)
+export function formatTime(isoString) {
+  return new Date(isoString).toLocaleTimeString();
+}
+
 // "2026-10-22T18:00:00.000Z" → "10/22/2026" (in the viewer's own locale)
 export function formatDate(isoString) {
   return new Date(isoString).toLocaleDateString();

@@ -4,6 +4,7 @@ import { AuthState } from '../login/authState';
 import { playTone, randomFrequency, stopTone } from './audio';
 import { ACCURACY_WEIGHT, MAX_SCORE, SPEED_WEIGHT, scoreRound } from './scoring';
 import { saveScore } from '../services/scoreService';
+import { GameEvent, GameNotifier } from '../services/gameNotifier';
 import { formatPercent, formatSeconds } from '../format';
 
 const TONES_PER_ROUND = 10;
@@ -160,9 +161,11 @@ export function Game({ userName, authState }) {
   // Saves a finished round for the logged-in player.
   async function saveRound(finalGuesses) {
     const { score, accuracy, avgTimeMs } = scoreRound(finalGuesses, TIME_LIMIT_MS);
+    const entry = { name: userName, score, accuracy, avgTimeMs, date: new Date().toISOString() };
     setSaveStatus('saving');
     try {
-      await saveScore({ name: userName, score, accuracy, avgTimeMs, date: new Date().toISOString() });
+      await saveScore(entry);
+      GameNotifier.broadcastEvent(GameEvent.RoundFinished, entry);
       setSaveStatus('saved');
     } catch {
       setSaveStatus('error');

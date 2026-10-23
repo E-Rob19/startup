@@ -96,7 +96,7 @@ Use `useState` for the round phase: `idle → playing → guessing → … → f
 - [x] Call `saveScore` when the round finishes, **only if the player is logged in**. Guests still see their full results screen, with a note: "Log in to save scores like this one."
 - [x] Seed a few fake players the first time it runs, so the leaderboard isn't empty on a fresh browser.
 - [x] **Fixed after testing:** all localStorage keys are prefixed with `earshot.` (`earshot.users`, `earshot.userName`, `earshot.scores`), because Simon also uses `scores` and `userName` on `localhost:5173`.
-- [ ] ~~Fire a local "score posted" event~~ **Moved to step 10**, where the code that listens for it is built.
+- [x] ~~Fire a local "score posted" event~~ **Moved to step 10** (done there), where the code that listens for it is built.
 
 ### Step 9: Leaderboard and Profile read real data
 - [x] Leaderboard: `useEffect` on mount → `getLeaderboard()` → `useState` → render the rows with `.map()`. Highlight the current user's rows.
@@ -104,11 +104,11 @@ Use `useState` for the round phase: `idle → playing → guessing → … → f
 - [x] Remove the `[Placeholder: Database Data]` tags and the "rows above stand in for…" notes.
 
 ### Step 10: Simulated WebSocket live feed
-- [ ] `gameNotifier.js` (same idea as Simon's): a class that keeps a list of handlers, plus a `setInterval` that every 5–8 s makes up a "*player* just finished a round with a score of *N*" event and sends it to the handlers.
-- [ ] When a logged-in player finishes a round, send their score to the live feed too (moved here from step 8). Guests' rounds aren't sent.
-- [ ] Leaderboard `useEffect` subscribes on mount and unsubscribes in cleanup. New events go to the top of the live feed, which is capped at about 10 entries.
-- [ ] Optional: also insert the fake scores into the leaderboard table so it visibly changes live.
-- [ ] Remove the `[Placeholder: WebSocket Data]` tag.
+- [x] `gameNotifier.js` (same idea as Simon's): a class that keeps a list of handlers, plus a `setInterval` that every 5–8 s makes up a "*player* just finished a round with a score of *N*" event and sends it to the handlers.
+- [x] When a logged-in player finishes a round, send their score to the live feed too (moved here from step 8). Guests' rounds aren't sent.
+- [x] Leaderboard `useEffect` subscribes on mount and unsubscribes in cleanup. New events go to the top of the live feed, which is capped at about 10 entries.
+- [x] Optional: also insert the fake scores into the leaderboard table so it visibly changes live.
+- [x] Remove the `[Placeholder: WebSocket Data]` tag.
 
 ### Step 11: Mocked third-party API (Frequency Reference on Home)
 - [ ] `noteService.js` → `lookupNote('A4')` returns a Promise that resolves to a hard-coded or computed object shaped like the future API response, for example `{ note: 'A4', frequency: 440.0, midi: 69 }`. (Computing it with `440 × 2^((midi − 69) / 12)` is fine. It's still a stand-in for the endpoint.)
