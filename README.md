@@ -118,9 +118,19 @@ For this deliverable I did the following. I checked the box `[x]` and added a de
 
 For this deliverable I did the following. I checked the box `[x]` and added a description for things I completed.
 
-- [ ] I completed the prerequisites for this deliverable (Simon deployed, GitHub link, Git commits)
-- [ ] **All functionality implemented or mocked out** - I did not complete this part of the deliverable.
-- [ ] **Hooks** - I did not complete this part of the deliverable.
+- [X] I completed the prerequisites for this deliverable (Simon deployed, GitHub link, Git commits)
+- [x] **All functionality implemented or mocked out** - The full app works in the browser. Anything that will later need the backend is mocked in its own service file under `src/services/`, so the pages won't need to change when the real endpoints exist.
+  - **Login (mocked with localStorage)** - `authService.js` handles create account, login, and logout, with validation and error messages (taken username, mismatched passwords, wrong password). The navbar switches between Login and Logout/Profile, `/profile` redirects to Login when logged out, and you stay logged in across refreshes. Guests can still play, but their scores aren't saved.
+  - **Game (fully implemented)** - Each round has 10 tones (5 clear, 5 mixed with pink noise), generated live with the Web Audio API, with low tones boosted to make up for how the ear hears bass. You get unlimited replays (with a cooldown so tones never overlap), a 10-second countdown per tone that auto-submits when time runs out, and a short pause between tones.
+  - **Scoring (fully implemented)** - Accuracy is measured in octaves (`|log2(guess / target)|`) so it's fair across the frequency range. Score out of 1000 = 70% accuracy + 30% speed, where speed only counts as much as each guess was accurate. The results screen shows a per-tone breakdown.
+  - **Database (mocked with localStorage)** - `scoreService.js` saves logged-in players' rounds. The Leaderboard shows each player's best score (your row is highlighted), and the Profile shows your full round history with a summary. Seven fake players are seeded so the leaderboard isn't empty in a new browser.
+  - **WebSocket (mocked with setTimeout)** - `gameNotifier.js` acts like a WebSocket connection: while the Leaderboard is open, fake players "finish rounds" every 5–8 seconds, and their results appear in the Live Standings feed and update the table live. Your own finished rounds are sent through the same channel.
+  - **3rd party API (mocked with a hard-coded response)** - `noteService.js` stands in for a note-to-frequency API. The Frequency Reference panel on Home looks up any note (e.g. `A4`, `C#3`, `Bb2`) and returns `{ note, frequency, midi }` after a short simulated delay, with a Play button to hear it.
+- [x] **Hooks** - Used `useState`, `useEffect`, and `useRef` throughout.
+  - **`useState`** - Login state in `App` (passed down as props), controlled form inputs, the game's round phase/tone/guesses/fader/timer, and the loaded leaderboard, history, and live feed.
+  - **`useEffect`** - The per-tone countdown (`setInterval`, cleared in the cleanup), auto-submit when time hits 0, the pause between tones (`setTimeout`), loading leaderboard and profile data, subscribing and unsubscribing from the live feed, and stopping audio when leaving a page.
+  - **`useRef`** - The tone start time for response timing, and a play counter that keeps a cut-off tone from re-enabling the Play button early.
+  - **React Router hooks** - `useNavigate` to redirect after login, and `<Navigate>` to protect the Profile route.
 
 ## 🚀 Service deliverable
 

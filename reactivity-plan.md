@@ -121,7 +121,7 @@ Use `useState` for the round phase: `idle → playing → guessing → … → f
 - [ ] Test the whole flow in a private window (empty localStorage): create account → play a round → score shows up on the leaderboard and profile → logout → protected pages redirect.
 - [x] Run `npm run build` and fix any warnings. (Clean: the only warnings are harmless "use client" notes from react-router and react-bootstrap.)
 - [ ] Deploy with `./deployReact.sh` (you, by hand).
-- [ ] Update the README's React Part 2 section (you'll write this one yourself).
+- [x] Update the README's React Part 2 section.
 
 ---
 
