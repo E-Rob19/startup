@@ -7,6 +7,9 @@ const TONES_PER_ROUND = 10;
 const CLEAR_TONES = 5;
 const TONE_MS = 1500;
 const REPLAY_COOLDOWN_MS = 500;
+const TIME_LIMIT_MS = 10000;
+const TIMER_TICK_MS = 100;
+const BETWEEN_TONES_MS = 1500;
 const DEFAULT_SLIDER_POS = 447; // about 440 Hz
 
 // Fader tick labels and where they sit along the slider (0 = left, 1 = right).
@@ -26,6 +29,12 @@ function sliderToFreq(pos) {
   return Math.round(20 * Math.pow(1000, pos / 1000));
 }
 
+// 9500 ms → "0:10", 3200 ms → "0:04". Rounds up so it only hits 0:00 at the very end.
+function formatTimeLeft(ms) {
+  const seconds = Math.ceil(ms / 1000);
+  return `0:${String(seconds).padStart(2, '0')}`;
+}
+
 // First CLEAR_TONES tones are clear, the rest have noise.
 function createTargets() {
   return Array.from({ length: TONES_PER_ROUND }, (_, i) => ({
@@ -34,7 +43,7 @@ function createTargets() {
   }));
 }
 
-function FrequencyFader({ value, onChange }) {
+function FrequencyFader({ value, onChange, disabled }) {
   return (
     <div id="fader">
       <div className="tick-row" aria-hidden="true">
@@ -53,18 +62,20 @@ function FrequencyFader({ value, onChange }) {
         step="1"
         value={value}
         onChange={(e) => onChange(Number(e.target.value))}
+        disabled={disabled}
       />
     </div>
   );
 }
 
 export function Game({ userName, authState }) {
-  const [phase, setPhase] = React.useState('idle'); // 'idle' | 'inRound' | 'finished'
+  const [phase, setPhase] = React.useState('idle'); // 'idle' | 'inRound' | 'betweenTones' | 'finished'
   const [targets, setTargets] = React.useState([]);
   const [toneIndex, setToneIndex] = React.useState(0);
   const [guesses, setGuesses] = React.useState([]);
   const [sliderPos, setSliderPos] = React.useState(DEFAULT_SLIDER_POS);
   const [isPlaying, setIsPlaying] = React.useState(false);
+  const [timeLeftMs, setTimeLeftMs] = React.useState(TIME_LIMIT_MS);
 
   const toneStartRef = React.useRef(0);
   const playIdRef = React.useRef(0);
@@ -74,8 +85,48 @@ export function Game({ userName, authState }) {
     return () => stopTone();
   }, []);
 
+  // Countdown for the current tone. Restarts whenever a new tone starts,
+  // and the cleanup stops the old interval so only one ever runs.
+  React.useEffect(() => {
+    if (phase !== 'inRound') return;
+
+    const deadline = toneStartRef.current + TIME_LIMIT_MS;
+    const tick = () => setTimeLeftMs(Math.max(0, deadline - performance.now()));
+    tick();
+    const intervalId = setInterval(tick, TIMER_TICK_MS);
+    return () => clearInterval(intervalId);
+  }, [phase, toneIndex]);
+
+  // Out of time: submit whatever the fader is on. This runs after a render,
+  // so handleTimeout sees the current fader position, not a stale one.
+  React.useEffect(() => {
+    if (phase === 'inRound' && timeLeftMs === 0) {
+      handleTimeout();
+    }
+  }, [phase, timeLeftMs]);
+
+  // Short pause after each answer, then the next tone (or the results).
+  // Gives the ear a break and stops a late click from answering the next tone.
+  React.useEffect(() => {
+    if (phase !== 'betweenTones') return;
+
+    const timeoutId = setTimeout(() => {
+      const nextIndex = toneIndex + 1;
+      if (nextIndex < TONES_PER_ROUND) {
+        setToneIndex(nextIndex);
+        setPhase('inRound');
+        startTone(targets[nextIndex]);
+      } else {
+        setPhase('finished');
+      }
+    }, BETWEEN_TONES_MS);
+    return () => clearTimeout(timeoutId);
+  }, [phase, toneIndex]);
+
   const guessFreq = sliderToFreq(sliderPos);
   const currentTarget = targets[toneIndex];
+  const isBetweenTones = phase === 'betweenTones';
+  const lastGuess = guesses[guesses.length - 1];
 
   // Plays a tone, then keeps the Play button disabled for a short cooldown.
   // playId makes sure an older, cut-off tone can't re-enable the button
@@ -93,6 +144,7 @@ export function Game({ userName, authState }) {
   // Moves on to a new tone: reset the fader, start the clock, play it.
   function startTone(target) {
     setSliderPos(DEFAULT_SLIDER_POS);
+    setTimeLeftMs(TIME_LIMIT_MS);
     toneStartRef.current = performance.now();
     play(target);
   }
@@ -106,9 +158,10 @@ export function Game({ userName, authState }) {
     startTone(newTargets[0]);
   }
 
-  function submitGuess(e) {
-    e.preventDefault();
+  function recordGuess(timeMs, timedOut) {
     stopTone();
+    playIdRef.current++;
+    setIsPlaying(false);
 
     setGuesses([
       ...guesses,
@@ -116,19 +169,24 @@ export function Game({ userName, authState }) {
         target: currentTarget.freq,
         withNoise: currentTarget.withNoise,
         guess: guessFreq,
-        timeMs: Math.round(performance.now() - toneStartRef.current),
+        timeMs,
+        timedOut,
       },
     ]);
+    setPhase('betweenTones');
+  }
 
-    const nextIndex = toneIndex + 1;
-    if (nextIndex < TONES_PER_ROUND) {
-      setToneIndex(nextIndex);
-      startTone(targets[nextIndex]);
-    } else {
-      playIdRef.current++;
-      setIsPlaying(false);
-      setPhase('finished');
-    }
+  function submitGuess(e) {
+    e.preventDefault();
+    if (phase !== 'inRound') return;
+    const elapsed = Math.round(performance.now() - toneStartRef.current);
+    recordGuess(Math.min(elapsed, TIME_LIMIT_MS), false);
+  }
+
+  // What happens when time runs out. For now: submit wherever the fader is,
+  // counting the full time limit as the response time.
+  function handleTimeout() {
+    recordGuess(TIME_LIMIT_MS, true);
   }
 
   return (
@@ -155,7 +213,7 @@ export function Game({ userName, authState }) {
         </section>
       )}
 
-      {phase === 'inRound' && (
+      {(phase === 'inRound' || isBetweenTones) && (
         <>
           <section id="tone-visualizer">
             <h2>Now Playing</h2>
@@ -178,11 +236,25 @@ export function Game({ userName, authState }) {
                 aria-valuemax={TONES_PER_ROUND}
               ></div>
             </div>
+            <p
+              id="countdown-timer"
+              className={!isBetweenTones && timeLeftMs <= 3000 ? 'text-danger' : ''}
+              role="status"
+            >
+              {isBetweenTones ? (
+                <>
+                  {lastGuess.timedOut ? "Time's up!" : 'Got it!'}{' '}
+                  {toneIndex + 1 < TONES_PER_ROUND ? `Get ready for tone ${toneIndex + 2}…` : 'Tallying your round…'}
+                </>
+              ) : (
+                <>Time Left: <span id="time-left">{formatTimeLeft(timeLeftMs)}</span></>
+              )}
+            </p>
             <button
               type="button"
               className="btn btn-brand"
               onClick={() => play(currentTarget)}
-              disabled={isPlaying}
+              disabled={isPlaying || isBetweenTones}
             >
               {isPlaying ? 'Playing…' : 'Play Tone'}
             </button>
@@ -192,9 +264,9 @@ export function Game({ userName, authState }) {
             <h2>Submit Your Guess</h2>
             <form onSubmit={submitGuess}>
               <label htmlFor="frequency-guess" className="form-label">Frequency (Hz)</label>
-              <FrequencyFader value={sliderPos} onChange={setSliderPos} />
+              <FrequencyFader value={sliderPos} onChange={setSliderPos} disabled={isBetweenTones} />
               <p id="frequency-value">Guess: <span id="frequency-readout">{guessFreq}</span> Hz</p>
-              <button type="submit" className="btn btn-brand">Submit Guess</button>
+              <button type="submit" className="btn btn-brand" disabled={isBetweenTones}>Submit Guess</button>
             </form>
           </section>
         </>

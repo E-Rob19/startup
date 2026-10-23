@@ -78,8 +78,9 @@ Use `useState` for the round phase: `idle → playing → guessing → … → f
 
 ### Step 6: Timer
 - [x] `useRef` to store the timestamp when each tone first played, which gives the response time. (Done in step 5, since Submit needed it.)
-- [ ] `useEffect` + `setInterval` for the countdown display (10 s per tone). Clear the interval in the effect's cleanup function.
-- [ ] When time runs out, auto-submit wherever the slider currently is, using the full 10 s as the response time. (Might change later, so keep this in one `handleTimeout` function.)
+- [x] `useEffect` + `setInterval` for the countdown display (10 s per tone). Clear the interval in the effect's cleanup function.
+- [x] When time runs out, auto-submit wherever the slider currently is, using the full 10 s as the response time. (Might change later, so keep this in one `handleTimeout` function.)
+- [x] **Added after testing:** a 1.5 s pause between tones (and before the results), with controls disabled, so the next tone isn't jarring and a late click can't answer it.
 
 ### Step 7: Scoring
 - [ ] Per-tone accuracy from the error in octaves: `err = |log2(guess / target)|`. Measuring in octaves is fair across the whole spectrum, so being off by 100 Hz at 8 kHz counts as close but at 100 Hz counts as way off.
