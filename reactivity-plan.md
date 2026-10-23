@@ -56,11 +56,11 @@ Commit after each step. Small commits also satisfy the "Git commits" prerequisit
 - [x] Home: replace the Login/Create Account buttons with "Welcome back, *name*" and a **Start Playing** button when logged in.
 
 ### Step 4: Audio engine (real, not mocked)
-- [ ] `src/game/audio.js`: create one shared `AudioContext` (it must be created or resumed after a user click, because browsers block autoplay).
-- [ ] `playTone(freq, durationMs, { withNoise })`: an `OscillatorNode` (sine) through a `GainNode` with short fade-in and fade-out ramps so the tones don't click.
-- [ ] Noise: generate a white- or pink-noise `AudioBuffer` once and loop it at a lower gain under the tone for the "mixed with noise" tones.
-- [ ] Pick target frequencies on a smooth (continuous) log scale between about 63 Hz and 8 kHz, the range that matters for ringing out: `freq = 63 × (8000 / 63)^Math.random()`, rounded to the nearest Hz.
-- [ ] `playTone` returns a Promise that resolves when the tone finishes, so the game knows when it's safe to play again.
+- [x] `src/game/audio.js`: create one shared `AudioContext` (it must be created or resumed after a user click, because browsers block autoplay).
+- [x] `playTone(freq, durationMs, { withNoise })`: an `OscillatorNode` (sine) through a `GainNode` with short fade-in and fade-out ramps so the tones don't click.
+- [x] Noise: generate a white- or pink-noise `AudioBuffer` once and loop it at a lower gain under the tone for the "mixed with noise" tones.
+- [x] Pick target frequencies on a smooth (continuous) log scale between about 63 Hz and 8 kHz, the range that matters for ringing out: `freq = 63 × (8000 / 63)^Math.random()`, rounded to the nearest Hz.
+- [x] `playTone` returns a Promise that resolves when the tone finishes, so the game knows when it's safe to play again.
 
 ### Step 5: Game round state machine
 Use `useState` for the round phase: `idle → playing → guessing → … → finished`.

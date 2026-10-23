@@ -1,6 +1,14 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { AuthState } from '../login/authState';
+import { playTone, randomFrequency } from './audio';
+
+// TEMPORARY: step 4 test helper, removed in step 5.
+function testTone(withNoise) {
+  const freq = randomFrequency();
+  console.log(`Playing ${freq} Hz${withNoise ? ' with noise' : ''}`);
+  playTone(freq, 1500, { withNoise }).then(() => console.log('Tone finished'));
+}
 
 export function Game({ userName, authState }) {
   return (
@@ -36,7 +44,9 @@ export function Game({ userName, authState }) {
           ></div>
         </div>
         <p id="countdown-timer">Time Left: <span id="time-left">0:10</span></p>
-        <button type="button" className="btn btn-brand">Play Tone</button>
+        {/* TEMPORARY test buttons for step 4. Step 5 replaces these with the real round. */}
+        <button type="button" className="btn btn-brand" onClick={() => testTone(false)}>Play Tone</button>{' '}
+        <button type="button" className="btn btn-brand" onClick={() => testTone(true)}>Play Tone + Noise</button>
       </section>
 
       <section id="guess-form">
