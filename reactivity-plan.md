@@ -64,20 +64,20 @@ Commit after each step. Small commits also satisfy the "Git commits" prerequisit
 
 ### Step 5: Game round state machine
 Use `useState` for the round phase: `idle → playing → guessing → … → finished`.
-- [ ] State: `targets` (10 frequencies plus a noise flag for each, generated when the round starts), `toneIndex`, `guesses` (array of `{ guess, target, timeMs }`), `phase`.
-- [ ] Each round has exactly 5 clear tones and 5 noisy tones. Plan: tones 1–5 clear, 6–10 noisy, so difficulty ramps up. (Shuffling the order instead is a one-line change if you'd rather.) Show a "Clear" / "With noise" label for the current tone.
-- [ ] Make the slider controlled: `sliderPos` state, with the Hz value derived using the existing log formula. Delete the `document.getElementById` code.
-- [ ] **Start Round** button → generate targets, set `toneIndex = 0`, play the first tone.
-- [ ] **Play Tone** replays the current tone as many times as the player wants.
+- [x] State: `targets` (10 frequencies plus a noise flag for each, generated when the round starts), `toneIndex`, `guesses` (array of `{ guess, target, timeMs }`), `phase`.
+- [x] Each round has exactly 5 clear tones and 5 noisy tones. Plan: tones 1–5 clear, 6–10 noisy, so difficulty ramps up. (Shuffling the order instead is a one-line change if you'd rather.) Show a "Clear" / "With noise" label for the current tone.
+- [x] Make the slider controlled: `sliderPos` state, with the Hz value derived using the existing log formula. Delete the `document.getElementById` code.
+- [x] **Start Round** button → generate targets, set `toneIndex = 0`, play the first tone.
+- [x] **Play Tone** replays the current tone as many times as the player wants.
   - To stop replays from overlapping or cutting each other off, keep an `isPlaying` state. Set it when a tone starts, and clear it about 500 ms after the `playTone` Promise resolves (a short cooldown).
   - Disable the Play Tone button while `isPlaying` is true, and change its label to "Playing…".
   - Submitting a guess also stops any tone that's still playing before the next one starts.
-- [ ] **Submit Guess** → record the guess and response time, move to the next tone, and finish after 10.
-- [ ] The progress bar and "Tone X of 10" read from `toneIndex`.
-- [ ] Show "Welcome back, *userName*" instead of "Guest".
+- [x] **Submit Guess** → record the guess and response time, move to the next tone, and finish after 10.
+- [x] The progress bar and "Tone X of 10" read from `toneIndex`.
+- [x] Show "Welcome back, *userName*" instead of "Guest".
 
 ### Step 6: Timer
-- [ ] `useRef` to store the timestamp when each tone first played, which gives the response time.
+- [x] `useRef` to store the timestamp when each tone first played, which gives the response time. (Done in step 5, since Submit needed it.)
 - [ ] `useEffect` + `setInterval` for the countdown display (10 s per tone). Clear the interval in the effect's cleanup function.
 - [ ] When time runs out, auto-submit wherever the slider currently is, using the full 10 s as the response time. (Might change later, so keep this in one `handleTimeout` function.)
 
