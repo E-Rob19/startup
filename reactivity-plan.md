@@ -111,9 +111,10 @@ Use `useState` for the round phase: `idle → playing → guessing → … → f
 - [x] Remove the `[Placeholder: WebSocket Data]` tag.
 
 ### Step 11: Mocked third-party API (Frequency Reference on Home)
-- [ ] `noteService.js` → `lookupNote('A4')` returns a Promise that resolves to a hard-coded or computed object shaped like the future API response, for example `{ note: 'A4', frequency: 440.0, midi: 69 }`. (Computing it with `440 × 2^((midi − 69) / 12)` is fine. It's still a stand-in for the endpoint.)
-- [ ] Make the note input controlled, have the button call `lookupNote`, display the result, and show an error for input that doesn't parse.
-- [ ] Remove the `[Placeholder: Third-Party API]` tag.
+- [x] `noteService.js` → `lookupNote('A4')` returns a Promise that resolves to a hard-coded or computed object shaped like the future API response, for example `{ note: 'A4', frequency: 440.0, midi: 69 }`. (Computing it with `440 × 2^((midi − 69) / 12)` is fine. It's still a stand-in for the endpoint.)
+- [x] Make the note input controlled, have the button call `lookupNote`, display the result, and show an error for input that doesn't parse.
+- [x] Remove the `[Placeholder: Third-Party API]` tag.
+- [x] **Extra:** a short fake delay ("Looking up…") and a **Play** button that plays the looked-up note.
 
 ### Step 12: Cleanup and deploy
 - [ ] Search for leftover `placeholder-tag`s, `action="#"`, and `document.getElementById` calls.

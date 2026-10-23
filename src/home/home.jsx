@@ -1,8 +1,34 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { AuthState } from '../login/authState';
+import { lookupNote } from '../services/noteService';
+import { playTone, stopTone } from '../game/audio';
 
 export function Home({ userName, authState }) {
+  const [noteInput, setNoteInput] = React.useState('');
+  const [lookupResult, setLookupResult] = React.useState(null);
+  const [lookupError, setLookupError] = React.useState('');
+  const [isLooking, setIsLooking] = React.useState(false);
+
+  // Stop the Play button's tone if the player leaves the page.
+  React.useEffect(() => {
+    return () => stopTone();
+  }, []);
+
+  async function handleLookup(e) {
+    e.preventDefault();
+    setIsLooking(true);
+    setLookupError('');
+    setLookupResult(null);
+    try {
+      setLookupResult(await lookupNote(noteInput));
+    } catch (err) {
+      setLookupError(err.message);
+    } finally {
+      setIsLooking(false);
+    }
+  }
+
   return (
     <>
       {/* TEMPORARY: remove this repo link once it's no longer needed for grading */}
@@ -66,24 +92,44 @@ export function Home({ userName, authState }) {
 
         <section id="frequency-reference">
           <h2>Frequency Reference</h2>
-          <p className="placeholder-tag">[Placeholder: Third-Party API]</p>
           <p>
-            This panel will eventually pull note-to-frequency
-            data from an external audio reference API so players can cross-check standard pitches
-            while training. See
-            <a href="https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API" target="_blank" rel="noopener">MDN's Web Audio API docs</a>
-            for the browser-side tone generation this feature will build on.
+            Look up the frequency of any musical note to cross-check standard pitches while you
+            train. Tones are generated right in your browser with the{' '}
+            <a href="https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API" target="_blank" rel="noopener">Web Audio API</a>.
           </p>
           <ul>
             <li>A4 &mdash; 440 Hz</li>
             <li>E2 &mdash; 82.41 Hz</li>
             <li>C6 &mdash; 1046.5 Hz</li>
           </ul>
-          <form action="#" method="get">
-            <label htmlFor="note-lookup" className="form-label">Note (e.g. A4)</label>
-            <input type="text" id="note-lookup" name="note-lookup" placeholder="e.g. A4" className="form-control" />
-            <button type="button" className="btn btn-brand mt-2">Look Up Frequency</button>
+          <form onSubmit={handleLookup}>
+            <label htmlFor="note-lookup" className="form-label">Note (e.g. A4, C#3, Bb2)</label>
+            <input
+              type="text"
+              id="note-lookup"
+              placeholder="e.g. A4"
+              className="form-control"
+              value={noteInput}
+              onChange={(e) => setNoteInput(e.target.value)}
+            />
+            <button type="submit" className="btn btn-brand mt-2" disabled={!noteInput.trim() || isLooking}>
+              {isLooking ? 'Looking up…' : 'Look Up Frequency'}
+            </button>
           </form>
+          {lookupError && <p className="text-danger mt-2" role="alert">{lookupError}</p>}
+          {lookupResult && (
+            <p id="lookup-result" className="mt-2" role="status">
+              <strong>{lookupResult.note}</strong> = <strong>{lookupResult.frequency} Hz</strong>{' '}
+              <small>(MIDI note {lookupResult.midi})</small>{' '}
+              <button
+                type="button"
+                className="btn btn-sm btn-outline-secondary"
+                onClick={() => playTone(lookupResult.frequency)}
+              >
+                Play
+              </button>
+            </p>
+          )}
         </section>
       </main>
     </>
