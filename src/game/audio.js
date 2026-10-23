@@ -4,9 +4,16 @@
 export const MIN_FREQ = 63;
 export const MAX_FREQ = 8000;
 
-const TONE_VOLUME = 0.3;
-const NOISE_VOLUME = 0.5;
+// Volumes are kept low enough that the loudest boosted tone plus noise
+// (about 0.6 + 0.25) stays under 1.0, the point where audio clips.
+const TONE_VOLUME = 0.15;
+const NOISE_VOLUME = 0.25;
 const FADE_SECONDS = 0.02;
+
+// Ears are less sensitive to low frequencies, so tones below the corner
+// get boosted, up to MAX_LOW_BOOST_DB at MIN_FREQ.
+const LOW_BOOST_CORNER = 500;
+const MAX_LOW_BOOST_DB = 12;
 
 let audioCtx = null;
 let noiseBuffer = null;
@@ -60,6 +67,16 @@ function createEnvelope(ctx, volume, start, end) {
   return gain;
 }
 
+// Volume multiplier for a frequency: 1 at or above the corner, rising
+// smoothly (in dB per octave) to MAX_LOW_BOOST_DB at MIN_FREQ.
+export function loudnessBoost(freq) {
+  if (freq >= LOW_BOOST_CORNER) return 1;
+  const octavesBelow = Math.log2(LOW_BOOST_CORNER / freq);
+  const maxOctaves = Math.log2(LOW_BOOST_CORNER / MIN_FREQ);
+  const boostDb = MAX_LOW_BOOST_DB * Math.min(1, octavesBelow / maxOctaves);
+  return Math.pow(10, boostDb / 20);
+}
+
 // Random frequency on a smooth log scale, so each octave is equally likely.
 export function randomFrequency() {
   return Math.round(MIN_FREQ * Math.pow(MAX_FREQ / MIN_FREQ, Math.random()));
@@ -74,7 +91,7 @@ export function playTone(freq, durationMs = 1500, { withNoise = false } = {}) {
   const start = ctx.currentTime;
   const end = start + durationMs / 1000;
 
-  const gains = [createEnvelope(ctx, TONE_VOLUME, start, end)];
+  const gains = [createEnvelope(ctx, TONE_VOLUME * loudnessBoost(freq), start, end)];
   const osc = ctx.createOscillator();
   osc.type = 'sine';
   osc.frequency.value = freq;

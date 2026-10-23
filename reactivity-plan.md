@@ -61,6 +61,7 @@ Commit after each step. Small commits also satisfy the "Git commits" prerequisit
 - [x] Noise: generate a white- or pink-noise `AudioBuffer` once and loop it at a lower gain under the tone for the "mixed with noise" tones.
 - [x] Pick target frequencies on a smooth (continuous) log scale between about 63 Hz and 8 kHz, the range that matters for ringing out: `freq = 63 × (8000 / 63)^Math.random()`, rounded to the nearest Hz.
 - [x] `playTone` returns a Promise that resolves when the tone finishes, so the game knows when it's safe to play again.
+- [x] **Added after testing:** boost tones below 500 Hz (up to +12 dB at 63 Hz) so low tones sound about as loud as high ones. Base volumes lowered to leave headroom.
 
 ### Step 5: Game round state machine
 Use `useState` for the round phase: `idle → playing → guessing → … → finished`.
