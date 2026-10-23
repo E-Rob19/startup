@@ -19,8 +19,8 @@ Every page is static JSX carried over from the HTML/CSS deliverables:
 
 | Real thing (later) | Mock for now |
 | --- | --- |
-| Login / register endpoints + MongoDB users | `localStorage`: a `users` object `{ username: password }`, plus `userName` for the current session |
-| Scores collection in MongoDB | `localStorage` `scores` array: `{ name, score, accuracy, avgTime, date }` |
+| Login / register endpoints + MongoDB users | `localStorage`: an `earshot.users` object `{ username: password }`, plus `earshot.userName` for the current session |
+| Scores collection in MongoDB | `localStorage` `earshot.scores` array: `{ name, score, accuracy, avgTime, date }` |
 | Leaderboard + history endpoints | Read and sort or filter the `scores` array |
 | WebSocket "player finished a round" broadcast | `setInterval` that produces fake players' results every few seconds |
 | Third-party note/frequency API | An async `lookupNote()` that returns a hard-coded response shaped like the real API will be |
@@ -92,10 +92,11 @@ Use `useState` for the round phase: `idle → playing → guessing → … → f
 - [x] Results screen: total score, accuracy %, average time, and a per-tone breakdown table (target vs. guess). Then **Play Again** and **View Leaderboard** buttons.
 
 ### Step 8: Save scores
-- [ ] `scoreService.js` with `saveScore(entry)`, `getLeaderboard()` (sort by score descending, top 10), and `getHistory(userName)` (filter by name, newest first).
-- [ ] Call `saveScore` when the round finishes, **only if the player is logged in**. Guests still see their full results screen, with a note: "Log in to save scores like this one."
-- [ ] Seed a few fake players the first time it runs, so the leaderboard isn't empty on a fresh browser.
-- [ ] Fire a local "score posted" event (used in step 10) so your own finish appears in the live feed. Skip this for guests too.
+- [x] `scoreService.js` with `saveScore(entry)`, `getLeaderboard()` (sort by score descending, top 10) (**one row per player, their best score**), and `getHistory(userName)` (filter by name, newest first).
+- [x] Call `saveScore` when the round finishes, **only if the player is logged in**. Guests still see their full results screen, with a note: "Log in to save scores like this one."
+- [x] Seed a few fake players the first time it runs, so the leaderboard isn't empty on a fresh browser.
+- [x] **Fixed after testing:** all localStorage keys are prefixed with `earshot.` (`earshot.users`, `earshot.userName`, `earshot.scores`), because Simon also uses `scores` and `userName` on `localhost:5173`.
+- [ ] ~~Fire a local "score posted" event~~ **Moved to step 10**, where the code that listens for it is built.
 
 ### Step 9: Leaderboard and Profile read real data
 - [ ] Leaderboard: `useEffect` on mount → `getLeaderboard()` → `useState` → render the rows with `.map()`. Highlight the current user's rows.
@@ -104,6 +105,7 @@ Use `useState` for the round phase: `idle → playing → guessing → … → f
 
 ### Step 10: Simulated WebSocket live feed
 - [ ] `gameNotifier.js` (same idea as Simon's): a class that keeps a list of handlers, plus a `setInterval` that every 5–8 s makes up a "*player* just finished a round with a score of *N*" event and sends it to the handlers.
+- [ ] When a logged-in player finishes a round, send their score to the live feed too (moved here from step 8). Guests' rounds aren't sent.
 - [ ] Leaderboard `useEffect` subscribes on mount and unsubscribes in cleanup. New events go to the top of the live feed, which is capped at about 10 entries.
 - [ ] Optional: also insert the fake scores into the leaderboard table so it visibly changes live.
 - [ ] Remove the `[Placeholder: WebSocket Data]` tag.

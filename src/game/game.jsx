@@ -3,6 +3,7 @@ import { NavLink } from 'react-router-dom';
 import { AuthState } from '../login/authState';
 import { playTone, randomFrequency, stopTone } from './audio';
 import { ACCURACY_WEIGHT, MAX_SCORE, SPEED_WEIGHT, scoreRound } from './scoring';
+import { saveScore } from '../services/scoreService';
 
 const TONES_PER_ROUND = 10;
 const CLEAR_TONES = 5;
@@ -87,6 +88,7 @@ export function Game({ userName, authState }) {
   const [sliderPos, setSliderPos] = React.useState(DEFAULT_SLIDER_POS);
   const [isPlaying, setIsPlaying] = React.useState(false);
   const [timeLeftMs, setTimeLeftMs] = React.useState(TIME_LIMIT_MS);
+  const [saveStatus, setSaveStatus] = React.useState(null); // null | 'saving' | 'saved' | 'error'
 
   const toneStartRef = React.useRef(0);
   const playIdRef = React.useRef(0);
@@ -129,6 +131,9 @@ export function Game({ userName, authState }) {
         startTone(targets[nextIndex]);
       } else {
         setPhase('finished');
+        if (authState === AuthState.Authenticated) {
+          saveRound(guesses);
+        }
       }
     }, BETWEEN_TONES_MS);
     return () => clearTimeout(timeoutId);
@@ -161,10 +166,23 @@ export function Game({ userName, authState }) {
     play(target);
   }
 
+  // Saves a finished round for the logged-in player.
+  async function saveRound(finalGuesses) {
+    const { score, accuracy, avgTimeMs } = scoreRound(finalGuesses, TIME_LIMIT_MS);
+    setSaveStatus('saving');
+    try {
+      await saveScore({ name: userName, score, accuracy, avgTimeMs, date: new Date().toISOString() });
+      setSaveStatus('saved');
+    } catch {
+      setSaveStatus('error');
+    }
+  }
+
   function startRound() {
     const newTargets = createTargets();
     setTargets(newTargets);
     setGuesses([]);
+    setSaveStatus(null);
     setToneIndex(0);
     setPhase('inRound');
     startTone(newTargets[0]);
@@ -294,6 +312,17 @@ export function Game({ userName, authState }) {
             Accuracy: <strong>{formatPercent(results.accuracy)}</strong> · Avg time:{' '}
             <strong>{formatSeconds(results.avgTimeMs)}</strong>
           </p>
+          {authState === AuthState.Authenticated ? (
+            <p role="status" className={saveStatus === 'error' ? 'text-danger' : ''}>
+              {saveStatus === 'saved' && 'Score saved to your profile and the leaderboard.'}
+              {saveStatus === 'saving' && 'Saving your score…'}
+              {saveStatus === 'error' && "Couldn't save your score. Your browser storage may be full or blocked."}
+            </p>
+          ) : (
+            <p className="alert alert-warning" role="status">
+              Guest scores aren't saved. <NavLink to="/login">Log in</NavLink> to save scores like this one.
+            </p>
+          )}
           <p>
             <small>
               Score = {formatPercent(ACCURACY_WEIGHT)} accuracy + {formatPercent(SPEED_WEIGHT)} speed. Speed

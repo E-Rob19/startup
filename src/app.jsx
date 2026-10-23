@@ -10,11 +10,11 @@ import { Profile } from './profile/profile';
 import { Login } from './login/login';
 import { CreateAccount } from './createAccount/createAccount';
 import { AuthState } from './login/authState';
-import { logout } from './services/authService';
+import { getStoredUserName, logout } from './services/authService';
 
 
 export default function App() {
-  const [userName, setUserName] = React.useState(localStorage.getItem('userName') || '');
+  const [userName, setUserName] = React.useState(getStoredUserName());
   const currentAuthState = userName ? AuthState.Authenticated : AuthState.Unauthenticated;
   const [authState, setAuthState] = React.useState(currentAuthState);
 
