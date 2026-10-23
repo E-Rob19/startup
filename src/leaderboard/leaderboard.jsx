@@ -1,30 +1,58 @@
 import React from 'react';
+import { getLeaderboard } from '../services/scoreService';
+import { formatPercent, formatSeconds } from '../format';
 
-export function Leaderboard() {
+export function Leaderboard({ userName }) {
+  const [scores, setScores] = React.useState(null); // null while loading
+
+  React.useEffect(() => {
+    let ignore = false;
+    getLeaderboard().then((leaderboard) => {
+      if (!ignore) setScores(leaderboard);
+    });
+    return () => {
+      ignore = true;
+    };
+  }, []);
+
   return (
     <main>
       <section id="leaderboard">
         <h2>Global Leaderboard</h2>
-        <p className="placeholder-tag">[Placeholder: Database Data]</p>
-        <div className="table-responsive">
-          <table className="table table-striped table-hover">
-            <thead>
-              <tr>
-                <th>Rank</th>
-                <th>Player</th>
-                <th>Score</th>
-                <th>Accuracy</th>
-                <th>Avg Time</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr><td>1</td><td>frequencyfox</td><td>987</td><td>96%</td><td>1.8s</td></tr>
-              <tr><td>2</td><td>mixmaster_jo</td><td>951</td><td>94%</td><td>2.1s</td></tr>
-              <tr><td>3</td><td>ringout_ray</td><td>930</td><td>92%</td><td>2.4s</td></tr>
-            </tbody>
-          </table>
-        </div>
-        <p><small>Database placeholder: rows above stand in for scores that will be read from MongoDB.</small></p>
+        <p><small>Each player's best round.</small></p>
+        {scores === null ? (
+          <p>Loading scores…</p>
+        ) : scores.length === 0 ? (
+          <p>No scores yet. Be the first!</p>
+        ) : (
+          <div className="table-responsive">
+            <table className="table table-striped table-hover">
+              <thead>
+                <tr>
+                  <th>Rank</th>
+                  <th>Player</th>
+                  <th>Score</th>
+                  <th>Accuracy</th>
+                  <th>Avg Time</th>
+                </tr>
+              </thead>
+              <tbody>
+                {scores.map((entry, i) => (
+                  <tr key={entry.name} className={entry.name === userName ? 'current-player' : ''}>
+                    <td>{i + 1}</td>
+                    <td>
+                      {entry.name}
+                      {entry.name === userName && ' (you)'}
+                    </td>
+                    <td>{entry.score}</td>
+                    <td>{formatPercent(entry.accuracy)}</td>
+                    <td>{formatSeconds(entry.avgTimeMs)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </section>
 
       <section id="live-updates">

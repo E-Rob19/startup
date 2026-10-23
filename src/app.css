@@ -300,3 +300,10 @@ footer {
   font-size: 1.25rem;
   color: #666;
 }
+
+/* Highlight the logged-in player's row. Bootstrap tables color cells with
+   --bs-table-bg-type, so setting it here overrides the striping. */
+#leaderboard tr.current-player > td {
+  --bs-table-bg-type: #fde3e9;
+  font-weight: 600;
+}

@@ -99,9 +99,9 @@ Use `useState` for the round phase: `idle → playing → guessing → … → f
 - [ ] ~~Fire a local "score posted" event~~ **Moved to step 10**, where the code that listens for it is built.
 
 ### Step 9: Leaderboard and Profile read real data
-- [ ] Leaderboard: `useEffect` on mount → `getLeaderboard()` → `useState` → render the rows with `.map()`. Highlight the current user's rows.
-- [ ] Profile: `getHistory(userName)` → table. Show an empty state ("No rounds yet, go play!") and maybe a best score / average summary at the top.
-- [ ] Remove the `[Placeholder: Database Data]` tags and the "rows above stand in for…" notes.
+- [x] Leaderboard: `useEffect` on mount → `getLeaderboard()` → `useState` → render the rows with `.map()`. Highlight the current user's rows.
+- [x] Profile: `getHistory(userName)` → table. Show an empty state ("No rounds yet, go play!") and maybe a best score / average summary at the top.
+- [x] Remove the `[Placeholder: Database Data]` tags and the "rows above stand in for…" notes.
 
 ### Step 10: Simulated WebSocket live feed
 - [ ] `gameNotifier.js` (same idea as Simon's): a class that keeps a list of handlers, plus a `setInterval` that every 5–8 s makes up a "*player* just finished a round with a score of *N*" event and sends it to the handlers.

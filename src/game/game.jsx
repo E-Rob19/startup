@@ -4,6 +4,7 @@ import { AuthState } from '../login/authState';
 import { playTone, randomFrequency, stopTone } from './audio';
 import { ACCURACY_WEIGHT, MAX_SCORE, SPEED_WEIGHT, scoreRound } from './scoring';
 import { saveScore } from '../services/scoreService';
+import { formatPercent, formatSeconds } from '../format';
 
 const TONES_PER_ROUND = 10;
 const CLEAR_TONES = 5;
@@ -35,16 +36,6 @@ function sliderToFreq(pos) {
 function formatTimeLeft(ms) {
   const seconds = Math.ceil(ms / 1000);
   return `0:${String(seconds).padStart(2, '0')}`;
-}
-
-// 0.874 → "87%"
-function formatPercent(fraction) {
-  return `${Math.round(fraction * 100)}%`;
-}
-
-// 2345 → "2.3s"
-function formatSeconds(ms) {
-  return `${(ms / 1000).toFixed(1)}s`;
 }
 
 // First CLEAR_TONES tones are clear, the rest have noise.
