@@ -3,27 +3,51 @@ import { getLeaderboard } from '../services/scoreService';
 import { GameNotifier } from '../services/gameNotifier';
 import { formatPercent, formatSeconds, formatTime } from '../format';
 
+const LEADERBOARD_SIZE = 10;
+
+// Adds live rounds into leaderboard rows: keeps each player's best round,
+// highest first, top LEADERBOARD_SIZE. Merging the same round twice is harmless.
+function mergeRounds(rows, rounds) {
+  const bestByPlayer = new Map(rows.map((row) => [row.name, row]));
+  for (const round of rounds) {
+    const best = bestByPlayer.get(round.name);
+    if (!best || round.score > best.score) {
+      bestByPlayer.set(round.name, round);
+    }
+  }
+  return [...bestByPlayer.values()]
+    .sort((a, b) => b.score - a.score)
+    .slice(0, LEADERBOARD_SIZE);
+}
+
+function recentRounds() {
+  return GameNotifier.getRecentEvents().map((event) => event.value);
+}
+
 export function Leaderboard({ userName }) {
   const [scores, setScores] = React.useState(null); // null while loading
   const [feed, setFeed] = React.useState(() => GameNotifier.getRecentEvents());
 
-  // Load the leaderboard, then listen for live events. Each event updates the
-  // feed and reloads the table, since the new round may change the standings.
+  // Load the leaderboard from the server, then listen for live events.
+  // Live rounds are merged into the table locally instead of reloading it:
+  // fake players' rounds only exist in the live feed, not on the server.
   React.useEffect(() => {
     let ignore = false;
 
-    function loadLeaderboard() {
-      getLeaderboard().then((leaderboard) => {
-        if (!ignore) setScores(leaderboard);
-      });
-    }
+    // Recent live rounds (kept by the notifier, even while this page was
+    // closed) are merged in too, so a fake player's new best doesn't vanish
+    // when you leave and come back.
+    getLeaderboard().then((leaderboard) => {
+      if (!ignore) setScores(mergeRounds(leaderboard, recentRounds()));
+    });
 
-    function handleGameEvent() {
+    function handleGameEvent(event) {
       setFeed(GameNotifier.getRecentEvents());
-      loadLeaderboard();
+      // Before the first load finishes there's nothing to merge into yet;
+      // the load above will include this round from recentRounds().
+      setScores((current) => (current ? mergeRounds(current, [event.value]) : current));
     }
 
-    loadLeaderboard();
     GameNotifier.addHandler(handleGameEvent);
     return () => {
       ignore = true;

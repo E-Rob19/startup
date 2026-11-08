@@ -107,8 +107,9 @@ There is one commit per step (or more), about 15 in all, which covers the "at le
 
 ### Step 10: Fake live rounds show in the leaderboard table again
 - [x] ~~Make fake rounds feed-only~~ (done in step 9).
-- [ ] Side effect of step 9: the Leaderboard reloads from the server on each live event, but fake rounds aren't on the server, so the table no longer changes when a fake player beats their best. Merge live rounds into the table locally (keep each player's best, re-sort, top 10) so the table still updates live.
-- [ ] The player's own finished rounds still go through the notifier as before. The WebSocket deliverable turns this into a real broadcast.
+- [x] Side effect of step 9: the Leaderboard reloads from the server on each live event, but fake rounds aren't on the server, so the table no longer changes when a fake player beats their best. Merge live rounds into the table locally (keep each player's best, re-sort, top 10) so the table still updates live.
+  - `mergeRounds(rows, rounds)` in `leaderboard.jsx`. On load, the server's rows are merged with the notifier's recent rounds, so a fake best survives leaving and coming back. Each live event is merged in with a functional `setScores` (no server reload).
+- [x] The player's own finished rounds still go through the notifier as before. The WebSocket deliverable turns this into a real broadcast. (No change needed.)
 
 ### Step 11: Validate the session on startup
 - [ ] In `App`, `useEffect` on mount → `GET /api/user/me`. On 401, clear the stored name and set `Unauthenticated`. This fixes the case where localStorage says "logged in" but the server was restarted and no longer knows the cookie.
