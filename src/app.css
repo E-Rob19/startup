@@ -307,3 +307,21 @@ footer {
   --bs-table-bg-type: #fde3e9;
   font-weight: 600;
 }
+
+/* Sound Engineering Glossary (Wikipedia summaries on Home) */
+#glossary-entry {
+  overflow: hidden; /* contain the floated thumbnail */
+}
+
+#glossary-entry img {
+  float: right;
+  width: 120px;
+  max-height: 120px;
+  object-fit: contain;
+  margin: 0 0 0.5rem 1rem;
+  border-radius: 0.5rem;
+}
+
+#glossary-entry h3 {
+  font-size: 1.25rem;
+}

@@ -3,29 +3,26 @@ import { NavLink } from 'react-router-dom';
 import { AuthState } from '../login/authState';
 import { lookupNote } from '../services/noteService';
 import { playTone, stopTone } from '../game/audio';
+import { SoundGlossary } from './soundGlossary';
 
 export function Home({ userName, authState }) {
   const [noteInput, setNoteInput] = React.useState('');
   const [lookupResult, setLookupResult] = React.useState(null);
   const [lookupError, setLookupError] = React.useState('');
-  const [isLooking, setIsLooking] = React.useState(false);
 
   // Stop the Play button's tone if the player leaves the page.
   React.useEffect(() => {
     return () => stopTone();
   }, []);
 
-  async function handleLookup(e) {
+  function handleLookup(e) {
     e.preventDefault();
-    setIsLooking(true);
-    setLookupError('');
-    setLookupResult(null);
     try {
-      setLookupResult(await lookupNote(noteInput));
+      setLookupResult(lookupNote(noteInput));
+      setLookupError('');
     } catch (err) {
+      setLookupResult(null);
       setLookupError(err.message);
-    } finally {
-      setIsLooking(false);
     }
   }
 
@@ -112,8 +109,8 @@ export function Home({ userName, authState }) {
               value={noteInput}
               onChange={(e) => setNoteInput(e.target.value)}
             />
-            <button type="submit" className="btn btn-brand mt-2" disabled={!noteInput.trim() || isLooking}>
-              {isLooking ? 'Looking up…' : 'Look Up Frequency'}
+            <button type="submit" className="btn btn-brand mt-2" disabled={!noteInput.trim()}>
+              Look Up Frequency
             </button>
           </form>
           {lookupError && <p className="text-danger mt-2" role="alert">{lookupError}</p>}
@@ -131,6 +128,8 @@ export function Home({ userName, authState }) {
             </p>
           )}
         </section>
+
+        <SoundGlossary />
       </main>
     </>
   );

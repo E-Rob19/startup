@@ -117,9 +117,11 @@ There is one commit per step (or more), about 15 in all, which covers the "at le
   - **Extra:** if the cookie is valid but localStorage was cleared, the name is restored from the server.
 
 ### Step 12: Real third-party API call
-- [ ] Replace the mock in `noteService.js` (or add alongside it) with a real `fetch` to the API chosen under **Decisions**, keeping the response shape the Home page expects.
-- [ ] Show a friendly error if the third-party service is down. Don't break the rest of Home.
-- [ ] Remove the fake-latency code.
+- [x] ~~Replace the mock in `noteService.js` (or~~ Add alongside it ~~)~~ a real `fetch` to the API chosen under **Decisions**.
+  - **UI chosen:** a new **Sound Engineering Glossary** card on Home (`src/home/soundGlossary.jsx`) that shows a random live-sound term (15 Wikipedia articles: Audio feedback, Pink noise, Room modes, Comb filter, …) with its summary, a thumbnail when there is one, a "From Wikipedia" attribution link, and a **Next Term** button.
+  - `src/services/wikipediaService.js` calls `https://en.wikipedia.org/api/rest_v1/page/summary/{title}` **directly from the browser** (Wikipedia allows CORS, no key needed) and reshapes the response to `{ title, extract, thumbnailUrl, pageUrl }`.
+- [x] Show a friendly error if the third-party service is down. Don't break the rest of Home. (Separate messages for a network failure, a 429 rate limit, and other errors. The button becomes "Try Another Term".)
+- [x] Remove the fake-latency code. `lookupNote` is now a plain **synchronous** function (no "Looking up…" state), since it's just math.
 
 ### Step 13: Error handling and polish
 - [ ] Express error-handling middleware that returns `{ msg }` with a 500, plus a JSON 404 for unknown `/api/*` routes, so the HTML fallback from step 3 doesn't answer API typos.

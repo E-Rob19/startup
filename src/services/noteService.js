@@ -1,8 +1,6 @@
-// Mock of the third-party note/frequency reference API. It computes the answer
-// locally, but returns it asynchronously in the same shape the real API's JSON
-// response will have, so swapping in fetch() later won't change the caller.
-
-const FAKE_LATENCY_MS = 300;
+// Note → frequency lookup. This is just math (equal temperament, A4 = 440 Hz),
+// so it's computed right here instead of calling an API. The third-party API
+// on the Home page is Wikipedia (see wikipediaService.js).
 
 const SEMITONES = { C: 0, D: 2, E: 4, F: 5, G: 7, A: 9, B: 11 };
 const ACCIDENTALS = { '': 0, '#': 1, b: -1 };
@@ -15,10 +13,9 @@ function parseMidiNumber(note) {
   return (Number(octave) + 1) * 12 + SEMITONES[letter] + ACCIDENTALS[accidental];
 }
 
-// Response shape: { note: 'A4', frequency: 440, midi: 69 }
-export async function lookupNote(input) {
-  await new Promise((resolve) => setTimeout(resolve, FAKE_LATENCY_MS));
-
+// Returns { note: 'A4', frequency: 440, midi: 69 }, or throws for input that
+// isn't a note name.
+export function lookupNote(input) {
   const trimmed = input.trim();
   const note = trimmed.charAt(0).toUpperCase() + trimmed.slice(1);
   const midi = parseMidiNumber(note);
