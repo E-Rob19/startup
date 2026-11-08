@@ -129,10 +129,12 @@ There is one commit per step (or more), about 15 in all, which covers the "at le
 - [x] ~~Remove~~ **Kept** `/api/health`. It's harmless and handy for checking a deploy.
 
 ### Step 14: Deploy script
-- [ ] Get `deployService.sh` from the Simon service repo (like you did for `deployReact.sh`). It builds the frontend into `service/public`, copies `service/` to the server, runs `npm install` there, and restarts the service with `pm2`.
+- [x] Get `deployService.sh` from the Simon service repo (like you did for `deployReact.sh`). It builds the frontend into `build/public`, copies `service/*.js` + `service/*.json` next to it, sends that to `services/startup` on the server, runs `npm install` there, and restarts the service with `pm2`. (Copied from `../simon-service`. The only change is the "Deploying service" title line.)
+  - Simulated the bundle locally (same copy steps, in a temp folder): it contains `index.js`, `scoring.js`, `package*.json`, and `public/`, and it runs on its own. Pages, `/api/*`, register, and `/user/me` all work.
 - [ ] Check that the Caddyfile on the server proxies `startup.earshot.click` → `localhost:4000` (the course default already does).
 - [ ] Deploy (you, by hand) with `./deployService.sh -k <key> -h earshot.click -s startup`.
 - [ ] Test on the live site in a private window: create account → play → leaderboard → profile → logout → profile redirects. Also refresh on `/leaderboard`.
+- Note: `deployReact.sh` is now outdated for this app (it only replaces `public/`, not the backend). Use `deployService.sh` from now on.
 
 ### Step 15: Write-up
 - [ ] Final explanations file update.
