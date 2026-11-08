@@ -1,20 +1,25 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { getHistory } from '../services/scoreService';
+import { getHistory, UnauthorizedError } from '../services/scoreService';
 import { formatDate, formatPercent, formatSeconds } from '../format';
 
-export function Profile({ userName }) {
+export function Profile({ userName, onSessionExpired }) {
   const [history, setHistory] = React.useState(null); // null while loading
 
   React.useEffect(() => {
     let ignore = false;
-    getHistory(userName).then((rounds) => {
-      if (!ignore) setHistory(rounds);
-    });
+    getHistory()
+      .then((rounds) => {
+        if (!ignore) setHistory(rounds);
+      })
+      .catch((err) => {
+        // Session gone: logging out makes App's /profile route redirect to Login.
+        if (!ignore && err instanceof UnauthorizedError) onSessionExpired();
+      });
     return () => {
       ignore = true;
     };
-  }, [userName]);
+  }, [userName, onSessionExpired]);
 
   const bestScore = history?.length ? Math.max(...history.map((round) => round.score)) : null;
   const averageScore = history?.length

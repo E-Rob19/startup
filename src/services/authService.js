@@ -14,6 +14,12 @@ export function getStoredUserName() {
   return localStorage.getItem(USER_NAME_KEY) || '';
 }
 
+// Forgets the stored name without calling the server. Used when the server has
+// already told us the session is gone (a 401), so there's nothing to log out of.
+export function clearStoredUserName() {
+  localStorage.removeItem(USER_NAME_KEY);
+}
+
 // Sends a JSON request to the service. Returns the parsed response body, or
 // throws an Error whose message the pages can show as-is.
 async function sendAuthRequest(method, path, body) {
@@ -52,7 +58,7 @@ export async function login(userName, password) {
 // Always logs out locally, even if the server can't be reached, so the
 // Logout button never gets stuck.
 export async function logout() {
-  localStorage.removeItem(USER_NAME_KEY);
+  clearStoredUserName();
   try {
     await sendAuthRequest('DELETE', 'logout');
   } catch {

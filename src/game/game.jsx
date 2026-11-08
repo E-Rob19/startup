@@ -3,7 +3,7 @@ import { NavLink } from 'react-router-dom';
 import { AuthState } from '../login/authState';
 import { playTone, randomFrequency, stopTone } from './audio';
 import { ACCURACY_WEIGHT, MAX_SCORE, SPEED_WEIGHT, scoreRound } from './scoring';
-import { saveScore } from '../services/scoreService';
+import { saveScore, UnauthorizedError } from '../services/scoreService';
 import { GameEvent, GameNotifier } from '../services/gameNotifier';
 import { formatPercent, formatSeconds } from '../format';
 
@@ -72,7 +72,7 @@ function FrequencyFader({ value, onChange, disabled }) {
   );
 }
 
-export function Game({ userName, authState }) {
+export function Game({ userName, authState, onSessionExpired }) {
   const [phase, setPhase] = React.useState('idle'); // 'idle' | 'inRound' | 'betweenTones' | 'finished'
   const [targets, setTargets] = React.useState([]);
   const [toneIndex, setToneIndex] = React.useState(0);
@@ -80,7 +80,7 @@ export function Game({ userName, authState }) {
   const [sliderPos, setSliderPos] = React.useState(DEFAULT_SLIDER_POS);
   const [isPlaying, setIsPlaying] = React.useState(false);
   const [timeLeftMs, setTimeLeftMs] = React.useState(TIME_LIMIT_MS);
-  const [saveStatus, setSaveStatus] = React.useState(null); // null | 'saving' | 'saved' | 'error'
+  const [saveStatus, setSaveStatus] = React.useState(null); // null | 'saving' | 'saved' | 'error' | 'expired'
 
   const toneStartRef = React.useRef(0);
   const playIdRef = React.useRef(0);
@@ -158,17 +158,23 @@ export function Game({ userName, authState }) {
     play(target);
   }
 
-  // Saves a finished round for the logged-in player.
+  // Saves a finished round for the logged-in player. Only the raw per-tone
+  // results are sent; the server computes the score itself and returns the
+  // saved entry, which is what gets announced on the live feed.
   async function saveRound(finalGuesses) {
-    const { score, accuracy, avgTimeMs } = scoreRound(finalGuesses, TIME_LIMIT_MS);
-    const entry = { name: userName, score, accuracy, avgTimeMs, date: new Date().toISOString() };
+    const tones = finalGuesses.map(({ target, guess, timeMs }) => ({ target, guess, timeMs }));
     setSaveStatus('saving');
     try {
-      await saveScore(entry);
+      const entry = await saveScore(tones);
       GameNotifier.broadcastEvent(GameEvent.RoundFinished, entry);
       setSaveStatus('saved');
-    } catch {
-      setSaveStatus('error');
+    } catch (err) {
+      if (err instanceof UnauthorizedError) {
+        setSaveStatus('expired');
+        onSessionExpired();
+      } else {
+        setSaveStatus('error');
+      }
     }
   }
 
@@ -306,11 +312,18 @@ export function Game({ userName, authState }) {
             Accuracy: <strong>{formatPercent(results.accuracy)}</strong> · Avg time:{' '}
             <strong>{formatSeconds(results.avgTimeMs)}</strong>
           </p>
-          {authState === AuthState.Authenticated ? (
+          {saveStatus === 'expired' ? (
+            // Checked first: by now the player has been logged out, so the
+            // guest message below would otherwise show instead.
+            <p className="alert alert-warning" role="status">
+              Your session expired, so this score wasn't saved. <NavLink to="/login">Log in again</NavLink> to
+              keep saving scores.
+            </p>
+          ) : authState === AuthState.Authenticated ? (
             <p role="status" className={saveStatus === 'error' ? 'text-danger' : ''}>
               {saveStatus === 'saved' && 'Score saved to your profile and the leaderboard.'}
               {saveStatus === 'saving' && 'Saving your score…'}
-              {saveStatus === 'error' && "Couldn't save your score. Your browser storage may be full or blocked."}
+              {saveStatus === 'error' && "Couldn't save your score. Please check your connection and try again later."}
             </p>
           ) : (
             <p className="alert alert-warning" role="status">

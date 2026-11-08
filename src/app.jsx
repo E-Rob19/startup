@@ -10,7 +10,7 @@ import { Profile } from './profile/profile';
 import { Login } from './login/login';
 import { CreateAccount } from './createAccount/createAccount';
 import { AuthState } from './login/authState';
-import { getStoredUserName, logout } from './services/authService';
+import { clearStoredUserName, getStoredUserName, logout } from './services/authService';
 
 
 export default function App() {
@@ -27,6 +27,16 @@ export default function App() {
     logout();
     onAuthChange('', AuthState.Unauthenticated);
   }
+
+  // A page got a 401: the server no longer recognizes our cookie (it expired,
+  // or the server restarted). Show the user as logged out to match.
+  // useCallback keeps it the same function between renders, so pages can list
+  // it in a useEffect's dependencies without re-running the effect every time.
+  const handleSessionExpired = React.useCallback(() => {
+    clearStoredUserName();
+    setUserName('');
+    setAuthState(AuthState.Unauthenticated);
+  }, []);
 
   return (
     <BrowserRouter>
@@ -60,13 +70,16 @@ export default function App() {
 
         <Routes>
           <Route path="/" element={<Home userName={userName} authState={authState} />} />
-          <Route path="/game" element={<Game userName={userName} authState={authState} />} />
+          <Route
+            path="/game"
+            element={<Game userName={userName} authState={authState} onSessionExpired={handleSessionExpired} />}
+          />
           <Route path="/leaderboard" element={<Leaderboard userName={userName} />} />
           <Route
             path="/profile"
             element={
               authState === AuthState.Authenticated ? (
-                <Profile userName={userName} />
+                <Profile userName={userName} onSessionExpired={handleSessionExpired} />
               ) : (
                 <Navigate to="/login" replace />
               )

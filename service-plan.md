@@ -97,12 +97,17 @@ There is one commit per step (or more), about 15 in all, which covers the "at le
 - Note: if you had an old `earshot.users` key in your browser from the mock, it's just leftover junk now. Clear it in DevTools if you like.
 
 ### Step 9: Frontend scores use the service
-- [ ] `scoreService.js`: `getLeaderboard` → `GET /api/scores`, `getHistory` → `GET /api/scores/mine`, `saveScore` → `POST /api/score`.
-- [ ] Handle 401 (expired or missing session, for example after a server restart): log the user out in the UI and send them to Login, instead of failing silently.
-- [ ] Remove the `earshot.scores` localStorage code.
+- [x] `scoreService.js`: `getLeaderboard` → `GET /api/scores`, `getHistory` → `GET /api/scores/mine` (no name argument anymore), `saveScore(tones)` → `POST /api/score` with `{ tones }`, returning the server-scored entry.
+- [x] Handle 401 (expired or missing session, for example after a server restart): log the user out in the UI and send them to Login, instead of failing silently.
+  - `scoreService` throws an `UnauthorizedError`. `App` has a `handleSessionExpired` (wrapped in `useCallback`) that it passes to Game and Profile.
+  - Profile: logs out, and App's route guard then redirects to `/login`.
+  - Game: stays on the results screen (so you can still see your score) and shows "Your session expired, so this score wasn't saved. Log in again."
+- [x] Remove the `earshot.scores` localStorage code.
+- [x] **Pulled forward from step 10:** `gameNotifier.js` imported `SEED_SCORES` and `saveScore` from `scoreService`, so it had to change in this step to keep the app working. It now has its own `FAKE_PLAYERS` list and **no longer saves fake rounds** (feed-only).
 
-### Step 10: Untangle the fake live feed from saving
-- [ ] `gameNotifier.js` currently calls `saveScore` for fake players. Those calls would now fail with 401 (or post fake scores under *your* name). Make fake rounds **feed-only**: they still appear in Live Standings and bump the table locally, but they aren't saved.
+### Step 10: Fake live rounds show in the leaderboard table again
+- [x] ~~Make fake rounds feed-only~~ (done in step 9).
+- [ ] Side effect of step 9: the Leaderboard reloads from the server on each live event, but fake rounds aren't on the server, so the table no longer changes when a fake player beats their best. Merge live rounds into the table locally (keep each player's best, re-sort, top 10) so the table still updates live.
 - [ ] The player's own finished rounds still go through the notifier as before. The WebSocket deliverable turns this into a real broadcast.
 
 ### Step 11: Validate the session on startup

@@ -1,7 +1,21 @@
 // Mock of the WebSocket connection that will push live game events from the
 // server. For now, fake players "finish rounds" every few seconds, and the
 // player's own finished rounds are broadcast through the same channel.
-import { SEED_SCORES, saveScore } from './scoreService';
+//
+// Fake rounds are feed-only: they are NOT saved to the server (they'd be
+// rejected anyway, since saving requires being logged in as that player).
+
+// The fake players' usual performance. Same names as the server's seed scores,
+// so their live rounds look consistent with the leaderboard.
+const FAKE_PLAYERS = [
+  { name: 'frequencyfox', score: 912, accuracy: 0.95, avgTimeMs: 2800 },
+  { name: 'mixmaster_jo', score: 874, accuracy: 0.92, avgTimeMs: 3400 },
+  { name: 'ringout_ray', score: 851, accuracy: 0.91, avgTimeMs: 4100 },
+  { name: 'gainstager', score: 803, accuracy: 0.87, avgTimeMs: 4600 },
+  { name: 'sub_woofer', score: 768, accuracy: 0.85, avgTimeMs: 5200 },
+  { name: 'feedback_fiona', score: 730, accuracy: 0.82, avgTimeMs: 5900 },
+  { name: 'monitor_mo', score: 689, accuracy: 0.79, avgTimeMs: 6300 },
+];
 
 export const GameEvent = {
   RoundFinished: 'roundFinished',
@@ -19,7 +33,7 @@ function clamp(value, min, max) {
 // A random round for a random fake player, near that player's usual score
 // (up to 120 below, 60 above), so their best scores don't creep up forever.
 function makeFakeRound() {
-  const player = SEED_SCORES[Math.floor(Math.random() * SEED_SCORES.length)];
+  const player = FAKE_PLAYERS[Math.floor(Math.random() * FAKE_PLAYERS.length)];
   const score = clamp(Math.round(player.score - 120 + Math.random() * 180), 0, MAX_FAKE_SCORE);
   return {
     name: player.name,
@@ -66,11 +80,9 @@ class GameEventNotifier {
   // setTimeout (not setInterval) so each wait can be a different random length.
   scheduleFakeEvent() {
     const delay = MIN_DELAY_MS + Math.random() * (MAX_DELAY_MS - MIN_DELAY_MS);
-    this.timeoutId = setTimeout(async () => {
+    this.timeoutId = setTimeout(() => {
       this.timeoutId = null;
-      const round = makeFakeRound();
-      await saveScore(round); // the "server" stores it before telling everyone
-      this.broadcastEvent(GameEvent.RoundFinished, round);
+      this.broadcastEvent(GameEvent.RoundFinished, makeFakeRound());
 
       // Keep going only if someone is still listening and no new chain has started.
       if (this.handlers.length > 0 && this.timeoutId === null) {
