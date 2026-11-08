@@ -82,6 +82,22 @@ apiRouter.delete('/auth/logout', (req, res) => {
   res.status(204).end();
 });
 
+// Middleware for restricted endpoints: only lets the request through if the
+// auth cookie belongs to a logged-in user, and attaches that user as req.user.
+function verifyAuth(req, res, next) {
+  const user = findUser('token', req.cookies[AUTH_COOKIE_NAME]);
+  if (!user) {
+    return res.status(401).send({ msg: 'Please log in.' });
+  }
+  req.user = user;
+  next();
+}
+
+// Restricted: who am I? The frontend uses this to check its session is still valid.
+apiRouter.get('/user/me', verifyAuth, (req, res) => {
+  res.send({ userName: req.user.userName });
+});
+
 // --- Helpers ---
 
 function isNonEmptyString(value) {

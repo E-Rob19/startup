@@ -75,9 +75,9 @@ There is one commit per step (or more), about 15 in all, which covers the "at le
 - [x] Test with `curl`: wrong password, unknown user, and no body → 401 with the same message. Correct login → 200 + new cookie. Logout → 204 + cookie cleared. Step 6's `/api/user/me` will confirm that the token is really gone.
 
 ### Step 6: Restricted endpoint middleware
-- [ ] `verifyAuth` middleware: find the user whose token matches `req.cookies.token`. If there is one, attach it as `req.user`. If not, return 401.
-- [ ] `GET /api/user/me` (restricted) returns `{ userName }`.
-- [ ] Test: call it logged in (200), then after logout (401).
+- [x] `verifyAuth` middleware: find the user whose token matches `req.cookies.token`. If there is one, attach it as `req.user`. If not, return 401.
+- [x] `GET /api/user/me` (restricted) returns `{ userName }`.
+- [x] Test: call it logged in (200), then after logout (401). Also: no cookie, a forged token, a copy of the cookie saved before logout, and the old cookie after a re-login → all 401.
 
 ### Step 7: Score endpoints
 - [ ] Move `SEED_SCORES` to the server so a fresh server already has a populated leaderboard.
