@@ -83,7 +83,7 @@ There is one commit per step (or more), about 15 in all, which covers the "at le
 - [ ] `GET /api/scores` (public): best score per player, top 10. This is the same logic as `getLeaderboard()` now.
 - [ ] `GET /api/scores/mine` (restricted): `req.user`'s rounds, newest first.
 - [ ] `POST /api/score` (restricted): basic validation (score between 0 and 1000, numbers that are numbers). The name comes from `req.user.userName`. Return the saved entry.
-- [ ] *Optional, 2nd commit:* also accept the per-tone `{ target, guess, timeMs }` list and **recompute the score on the server**, matching the README's sequence diagram (server computes the score). This stops anyone from posting a 1000 from the console.
+- [ ] *2nd commit:* also accept the per-tone `{ target, guess, timeMs }` list and **recompute the score on the server**, matching the README's sequence diagram (server computes the score). This stops anyone from posting a 1000 from the console.
 
 ### Step 8: Frontend auth uses the service
 - [ ] Rewrite `authService.js` so `register`, `login`, and `logout` call `fetch` (`credentials` are sent automatically on the same origin). On a non-OK response, throw `new Error(body.msg)` so the existing error messages in Login and Create Account keep working unchanged.
@@ -124,12 +124,10 @@ There is one commit per step (or more), about 15 in all, which covers the "at le
 
 ---
 
-## Decisions (please confirm)
+## Decisions (confirmed)
 
-1. **Third-party API.** There's no well-known public "note → frequency" API, and that's just math anyway. Options:
-   - **(Recommended) Wikipedia REST API.** `GET https://en.wikipedia.org/api/rest_v1/page/summary/{title}` is free, needs no key, and allows CORS. For example, after a note lookup, show a short "About this pitch" blurb, or add a rotating "Audio term of the day" card (Feedback, Equalization, Pink noise, Decibel...) on Home. Keep the note math local.
-   - A random fact/quote API like Simon's (`quote.cs260.click`). It's easy, but it has nothing to do with ear training.
-   - Find a real music-theory API. This is riskier, because small free APIs often go down or require keys.
-2. **Server-side scoring (step 7 optional).** Recommended. It matches the sequence diagram in your README and costs about one commit.
-3. **Port.** `4000` for the startup service (Simon uses 3000), which matches the course defaults and your Caddy setup.
-4. **Fake live-feed players.** Feed-only (not saved) until the WebSocket deliverable.
+1. **Third-party API: Wikipedia REST API.** `GET https://en.wikipedia.org/api/rest_v1/page/summary/{title}` is free, needs no key, and allows CORS. It adds pitch or audio-term blurbs on Home. The note → frequency math stays local, since it's just math. (Exact UI to be settled in step 12.)
+2. **Server-side scoring: yes.** Step 7's optional part is now required. The client sends per-tone results and the server computes the score, matching the README's sequence diagram.
+3. **Port: `4000`** for the startup service (Simon uses 3000).
+4. **Fake live-feed players: feed-only** (not saved) until the WebSocket deliverable.
+5. **Explanations** go in a new `service-explanations.md`.
