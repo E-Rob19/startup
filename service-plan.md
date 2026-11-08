@@ -80,10 +80,10 @@ There is one commit per step (or more), about 15 in all, which covers the "at le
 - [x] Test: call it logged in (200), then after logout (401). Also: no cookie, a forged token, a copy of the cookie saved before logout, and the old cookie after a re-login → all 401.
 
 ### Step 7: Score endpoints
-- [ ] Move `SEED_SCORES` to the server so a fresh server already has a populated leaderboard.
-- [ ] `GET /api/scores` (public): best score per player, top 10. This is the same logic as `getLeaderboard()` now.
-- [ ] `GET /api/scores/mine` (restricted): `req.user`'s rounds, newest first.
-- [ ] `POST /api/score` (restricted): basic validation (score between 0 and 1000, numbers that are numbers). The name comes from `req.user.userName`. Return the saved entry.
+- [x] Move `SEED_SCORES` to the server so a fresh server already has a populated leaderboard. (Copied for now. The frontend copy is removed in step 9/10.)
+- [x] `GET /api/scores` (public): best score per player, top 10. This is the same logic as `getLeaderboard()` now.
+- [x] `GET /api/scores/mine` (restricted): `req.user`'s rounds, newest first.
+- [x] `POST /api/score` (restricted): basic validation (score between 0 and 1000, numbers that are numbers). The name comes from `req.user.userName`, and the **date is set by the server** too. Return the saved entry.
 - [ ] *2nd commit:* also accept the per-tone `{ target, guess, timeMs }` list and **recompute the score on the server**, matching the README's sequence diagram (server computes the score). This stops anyone from posting a 1000 from the console.
 
 ### Step 8: Frontend auth uses the service

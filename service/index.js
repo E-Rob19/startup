@@ -8,6 +8,20 @@ const app = express();
 
 const AUTH_COOKIE_NAME = 'token';
 const BCRYPT_SALT_ROUNDS = 10;
+const MAX_SCORE = 1000;
+const LEADERBOARD_SIZE = 10;
+
+// Fake players so the leaderboard isn't empty on a freshly started server.
+// (Moved here from the frontend's scoreService.js.)
+const SEED_SCORES = [
+  { name: 'frequencyfox', score: 912, accuracy: 0.95, avgTimeMs: 2800, date: '2026-09-18T19:42:00.000Z' },
+  { name: 'mixmaster_jo', score: 874, accuracy: 0.92, avgTimeMs: 3400, date: '2026-09-17T15:10:00.000Z' },
+  { name: 'ringout_ray', score: 851, accuracy: 0.91, avgTimeMs: 4100, date: '2026-09-15T22:05:00.000Z' },
+  { name: 'gainstager', score: 803, accuracy: 0.87, avgTimeMs: 4600, date: '2026-09-14T17:30:00.000Z' },
+  { name: 'sub_woofer', score: 768, accuracy: 0.85, avgTimeMs: 5200, date: '2026-09-12T20:48:00.000Z' },
+  { name: 'feedback_fiona', score: 730, accuracy: 0.82, avgTimeMs: 5900, date: '2026-09-10T13:15:00.000Z' },
+  { name: 'monitor_mo', score: 689, accuracy: 0.79, avgTimeMs: 6300, date: '2026-09-08T18:22:00.000Z' },
+];
 
 // The built React app (Vite's dist/ output) is copied here when deploying.
 // Using __dirname makes the path work no matter which folder node is started from.
@@ -20,6 +34,8 @@ const port = process.argv.length > 2 ? process.argv[2] : 4000;
 // In-memory data for now; MongoDB replaces this in the DB deliverable.
 // Each user: { userName, passwordHash, token }
 const users = [];
+// Each round: { name, score, accuracy, avgTimeMs, date }
+const scores = [...SEED_SCORES];
 
 // Parse JSON request bodies into req.body.
 app.use(express.json());
@@ -98,10 +114,62 @@ apiRouter.get('/user/me', verifyAuth, (req, res) => {
   res.send({ userName: req.user.userName });
 });
 
+// Public: the leaderboard, so guests can see it too.
+apiRouter.get('/scores', (_req, res) => {
+  res.send(getLeaderboard());
+});
+
+// Restricted: the logged-in player's own rounds. There's no ?name= parameter;
+// "mine" always means req.user, so nobody can ask for someone else's history.
+apiRouter.get('/scores/mine', verifyAuth, (req, res) => {
+  const history = scores
+    .filter((entry) => entry.name === req.user.userName)
+    .sort((a, b) => b.date.localeCompare(a.date));
+  res.send(history);
+});
+
+// Restricted: save a finished round. The name and date are set here, not taken
+// from the request, so a player can only post scores as themselves.
+apiRouter.post('/score', verifyAuth, (req, res) => {
+  const { score, accuracy, avgTimeMs } = req.body ?? {};
+  if (!isNumberBetween(score, 0, MAX_SCORE) || !isNumberBetween(accuracy, 0, 1) || !isNumberBetween(avgTimeMs, 0, Infinity)) {
+    return res.status(400).send({ msg: 'Invalid score.' });
+  }
+
+  const entry = {
+    name: req.user.userName,
+    score: Math.round(score),
+    accuracy,
+    avgTimeMs: Math.round(avgTimeMs),
+    date: new Date().toISOString(),
+  };
+  scores.push(entry);
+  res.send(entry);
+});
+
 // --- Helpers ---
 
 function isNonEmptyString(value) {
   return typeof value === 'string' && value.trim() !== '';
+}
+
+// Rejects strings, NaN, null, etc. ("500" is not a number here.)
+function isNumberBetween(value, min, max) {
+  return typeof value === 'number' && Number.isFinite(value) && value >= min && value <= max;
+}
+
+// Each player's best round, highest first, top LEADERBOARD_SIZE only.
+function getLeaderboard() {
+  const bestByPlayer = new Map();
+  for (const entry of scores) {
+    const best = bestByPlayer.get(entry.name);
+    if (!best || entry.score > best.score) {
+      bestByPlayer.set(entry.name, entry);
+    }
+  }
+  return [...bestByPlayer.values()]
+    .sort((a, b) => b.score - a.score)
+    .slice(0, LEADERBOARD_SIZE);
 }
 
 // findUser('userName', 'emma') or findUser('token', req.cookies.token)
