@@ -10,7 +10,7 @@ import { Profile } from './profile/profile';
 import { Login } from './login/login';
 import { CreateAccount } from './createAccount/createAccount';
 import { AuthState } from './login/authState';
-import { clearStoredUserName, getStoredUserName, logout } from './services/authService';
+import { clearStoredUserName, getCurrentUser, getStoredUserName, logout } from './services/authService';
 
 
 export default function App() {
@@ -37,6 +37,31 @@ export default function App() {
     setUserName('');
     setAuthState(AuthState.Unauthenticated);
   }, []);
+
+  // On startup, check with the server that the stored name is still really
+  // logged in. localStorage only remembers the name; the cookie is what counts,
+  // and the server may have forgotten it (e.g. it restarted). Runs once.
+  React.useEffect(() => {
+    let ignore = false;
+    getCurrentUser()
+      .then((user) => {
+        if (ignore) return;
+        if (user) {
+          // Valid session: trust the server's name (this also restores the
+          // navbar if localStorage was cleared but the cookie is still good).
+          onAuthChange(user.userName, AuthState.Authenticated);
+        } else {
+          handleSessionExpired();
+        }
+      })
+      .catch(() => {
+        // Server unreachable: keep showing what localStorage says. Pages that
+        // need the server will report the problem themselves.
+      });
+    return () => {
+      ignore = true;
+    };
+  }, [handleSessionExpired]);
 
   return (
     <BrowserRouter>

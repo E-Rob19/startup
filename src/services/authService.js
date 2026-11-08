@@ -55,6 +55,23 @@ export async function login(userName, password) {
   return user;
 }
 
+// Asks the server who our auth cookie belongs to. Returns { userName } if the
+// session is valid, or null if the server doesn't recognize us (401). Throws
+// if the server can't be reached, since then we simply don't know.
+export async function getCurrentUser() {
+  const response = await fetch('/api/user/me');
+  if (response.status === 401) {
+    clearStoredUserName();
+    return null;
+  }
+  if (!response.ok) {
+    throw new Error(`Session check failed (${response.status}).`);
+  }
+  const user = await response.json();
+  localStorage.setItem(USER_NAME_KEY, user.userName);
+  return user;
+}
+
 // Always logs out locally, even if the server can't be reached, so the
 // Logout button never gets stuck.
 export async function logout() {

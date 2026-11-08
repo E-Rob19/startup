@@ -112,7 +112,9 @@ There is one commit per step (or more), about 15 in all, which covers the "at le
 - [x] The player's own finished rounds still go through the notifier as before. The WebSocket deliverable turns this into a real broadcast. (No change needed.)
 
 ### Step 11: Validate the session on startup
-- [ ] In `App`, `useEffect` on mount → `GET /api/user/me`. On 401, clear the stored name and set `Unauthenticated`. This fixes the case where localStorage says "logged in" but the server was restarted and no longer knows the cookie.
+- [x] In `App`, `useEffect` on mount → `GET /api/user/me`. On 401, clear the stored name and set `Unauthenticated`. This fixes the case where localStorage says "logged in" but the server was restarted and no longer knows the cookie.
+  - New `getCurrentUser()` in `authService.js`: returns `{ userName }`, or `null` on 401. Throws if the server is unreachable, and then App keeps what localStorage says.
+  - **Extra:** if the cookie is valid but localStorage was cleared, the name is restored from the server.
 
 ### Step 12: Real third-party API call
 - [ ] Replace the mock in `noteService.js` (or add alongside it) with a real `fetch` to the API chosen under **Decisions**, keeping the response shape the Home page expects.
