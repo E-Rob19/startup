@@ -131,14 +131,14 @@ There is one commit per step (or more), about 15 in all, which covers the "at le
 ### Step 14: Deploy script
 - [x] Get `deployService.sh` from the Simon service repo (like you did for `deployReact.sh`). It builds the frontend into `build/public`, copies `service/*.js` + `service/*.json` next to it, sends that to `services/startup` on the server, runs `npm install` there, and restarts the service with `pm2`. (Copied from `../simon-service`. The only change is the "Deploying service" title line.)
   - Simulated the bundle locally (same copy steps, in a temp folder): it contains `index.js`, `scoring.js`, `package*.json`, and `public/`, and it runs on its own. Pages, `/api/*`, register, and `/user/me` all work.
-- [ ] Check that the Caddyfile on the server proxies `startup.earshot.click` → `localhost:4000` (the course default already does).
-- [ ] Deploy (you, by hand) with `./deployService.sh -k <key> -h earshot.click -s startup`.
-- [ ] Test on the live site in a private window: create account → play → leaderboard → profile → logout → profile redirects. Also refresh on `/leaderboard`.
+- [x] Check that the Caddyfile on the server proxies `startup.earshot.click` → `localhost:4000` (the course default already does).
+- [x] Deploy (you, by hand) with `./deployService.sh -k <key> -h earshot.click -s startup`.
+- [x] Test on the live site in a private window: create account → play → leaderboard → profile → logout → profile redirects. Also refresh on `/leaderboard`. (You tested it in the browser. I also checked read-only: pages and deep links → 200 HTML, `/api/scores` → 200 JSON, restricted endpoints with no login → 401, `/api/nope` → 404 JSON.)
 - Note: `deployReact.sh` is now outdated for this app (it only replaces `public/`, not the backend). Use `deployService.sh` from now on.
 
 ### Step 15: Write-up
-- [ ] Final explanations file update.
-- [ ] README Service section (only when you tell me to).
+- [x] Final explanations file update (wrap-up section with the rubric mapping and a summary of plan changes).
+- [x] README Service section (only when you tell me to). Added at your request, with a note that data is kept in memory until the DB deliverable.
 
 ---
 

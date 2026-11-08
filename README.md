@@ -136,14 +136,21 @@ For this deliverable I did the following. I checked the box `[x]` and added a de
 
 For this deliverable I did the following. I checked the box `[x]` and added a description for things I completed.
 
-- [ ] I completed the prerequisites for this deliverable (Simon deployed, GitHub link, Git commits)
-- [ ] **Node.js/Express HTTP service** - I did not complete this part of the deliverable.
-- [ ] **Static middleware for frontend** - I did not complete this part of the deliverable.
-- [ ] **Calls to third party endpoints** - I did not complete this part of the deliverable.
-- [ ] **Backend service endpoints** - I did not complete this part of the deliverable.
-- [ ] **Frontend calls service endpoints** - I did not complete this part of the deliverable.
-- [ ] **Supports registration, login, logout, and restricted endpoint** - I did not complete this part of the deliverable.
-- [ ] **Uses BCrypt to hash passwords** - I did not complete this part of the deliverable.
+- [x] I completed the prerequisites for this deliverable (Simon deployed, GitHub link, Git commits)
+- [x] **Node.js/Express HTTP service** - The backend lives in `service/` with its own `package.json`. `service/index.js` is an Express 5 app listening on port 4000 (run by pm2 on the server, behind Caddy). All endpoints are grouped under an `/api` router so they can't collide with frontend routes, and `vite.config.mjs` proxies `/api` to the service during development.
+- [x] **Static middleware for frontend** - `express.static` serves the Vite build from `service/public`. A fallback after the API router sends `index.html` for any other path, so refreshing on a React Router page like `/leaderboard` still works.
+- [x] **Calls to third party endpoints** - The Home page has a **Sound Engineering Glossary** card that calls Wikipedia's REST API (`en.wikipedia.org/api/rest_v1/page/summary/{title}`) straight from the browser. It shows a random live-sound term (audio feedback, pink noise, room modes, comb filtering, ...) with its summary, thumbnail, and a link back to Wikipedia, plus a **Next Term** button. Network errors and rate limiting (429) show a friendly message without breaking the rest of the page.
+- [x] **Backend service endpoints** -
+  - `POST /api/auth/create`, `PUT /api/auth/login`, `DELETE /api/auth/logout`: accounts and sessions
+  - `GET /api/user/me` (restricted): who is logged in
+  - `GET /api/scores`: the public leaderboard (each player's best round, top 10)
+  - `GET /api/scores/mine` (restricted): the logged-in player's round history
+  - `POST /api/score` (restricted): saves a round. The client sends each tone's target, guess, and response time, and **the server validates the round and computes the score itself** (`service/scoring.js`), so a made-up score can't be posted. The player's name and the date also come from the server, not the request.
+  - Unknown `/api` paths return a JSON 404, and an error handler returns JSON errors instead of HTML.
+- [x] **Frontend calls service endpoints** - `src/services/authService.js` and `scoreService.js` replaced the localStorage mocks with `fetch` calls, so Login, Create Account, Game, Leaderboard, and Profile all use the backend. On startup the app checks `/api/user/me` to confirm the session is still valid. A 401 logs the user out cleanly, and a "Can't reach the server" message shows if the backend is down.
+- [x] **Supports registration, login, logout, and restricted endpoint** - Registering or logging in creates a random token, stored in an `httpOnly`, `secure`, `sameSite: strict` cookie. Logging out deletes the token on the server and clears the cookie. A `verifyAuth` middleware only lets requests with a valid token through to `/api/user/me`, `/api/scores/mine`, and `/api/score` (anything else gets a 401).
+- [x] **Uses BCrypt to hash passwords** - Passwords are hashed with `bcryptjs` (`bcrypt.hash(password, 10)`) when an account is created and checked with `bcrypt.compare` on login. Only the hash is stored, never the password. Login returns the same "Incorrect username or password" message whether the username or the password was wrong.
+- **Note:** For this deliverable, accounts and scores are kept **in memory** on the server (plain arrays in `service/index.js`), so restarting or redeploying the service clears them and resets the leaderboard to its seed players. Moving this data to MongoDB is the next (DB) deliverable. The Live Standings feed on the Leaderboard is also still simulated until the WebSocket deliverable.
 
 ## 🚀 DB deliverable
 
