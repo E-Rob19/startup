@@ -45,13 +45,13 @@ The restricted endpoints all sit behind one `verifyAuth` middleware.
 There is one commit per step (or more), about 15 in all, which covers the "at least a dozen commits" goal. Each step ends with something you can test.
 
 ### Step 0: Commit this plan
-- [ ] Commit `service-plan.md`.
+- [x] Commit `service-plan.md`.
 
 ### Step 1: Scaffold the Express service
-- [ ] Create a `service/` folder with its own `package.json` (`npm init -y`, then `npm install express`).
-- [ ] `service/index.js`: create the Express app, read the port from `process.argv[2]` with a default of `4000`, add `express.json()`, mount an `apiRouter` at `/api`, and add a placeholder `GET /api/health` that returns `{ ok: true }`.
-- [ ] Add `service/node_modules` to `.gitignore`.
-- [ ] Test: `node index.js`, then open `http://localhost:4000/api/health`.
+- [x] Create a `service/` folder with its own `package.json` (`npm init -y`, then `npm install express`). (Installed Express 5. Added an `npm start` script.)
+- [x] `service/index.js`: create the Express app, read the port from `process.argv[2]` with a default of `4000`, add `express.json()`, mount an `apiRouter` at `/api`, and add a placeholder `GET /api/health` that returns `{ ok: true }`.
+- [x] ~~Add `service/node_modules` to `.gitignore`.~~ Already covered: the root `node_modules/` rule matches at any depth.
+- [x] Test: `node index.js`, then open `http://localhost:4000/api/health`.
 
 ### Step 2: Vite dev proxy
 - [ ] Add a `vite.config.js` that proxies `/api` to `http://localhost:4000`. This lets the React dev server on 5173 call the backend without CORS problems.
