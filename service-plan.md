@@ -84,7 +84,10 @@ There is one commit per step (or more), about 15 in all, which covers the "at le
 - [x] `GET /api/scores` (public): best score per player, top 10. This is the same logic as `getLeaderboard()` now.
 - [x] `GET /api/scores/mine` (restricted): `req.user`'s rounds, newest first.
 - [x] `POST /api/score` (restricted): basic validation (score between 0 and 1000, numbers that are numbers). The name comes from `req.user.userName`, and the **date is set by the server** too. Return the saved entry.
-- [ ] *2nd commit:* also accept the per-tone `{ target, guess, timeMs }` list and **recompute the score on the server**, matching the README's sequence diagram (server computes the score). This stops anyone from posting a 1000 from the console.
+- [x] *2nd commit:* ~~also~~ **instead** accept the per-tone `{ target, guess, timeMs }` list and **recompute the score on the server**, matching the README's sequence diagram (server computes the score). This stops anyone from posting a 1000 from the console.
+  - New `service/scoring.js` (a CommonJS copy of the formula in `src/game/scoring.js`, which has to be kept in sync). It requires exactly 10 tones, each with its target, guess, and time in range.
+  - `POST /api/score` body is now `{ tones: [...] }`. The old `{ score, accuracy, avgTimeMs }` shape gets a 400. The frontend doesn't call this yet. Step 9 sends `tones`.
+  - **Known limit:** the browser plays the tones, so it knows the targets, and a determined cheater could still send `guess = target`. Fully closing that would need server-issued targets per round. Not planned unless you want it.
 
 ### Step 8: Frontend auth uses the service
 - [ ] Rewrite `authService.js` so `register`, `login`, and `logout` call `fetch` (`credentials` are sent automatically on the same origin). On a non-OK response, throw `new Error(body.msg)` so the existing error messages in Login and Create Account keep working unchanged.

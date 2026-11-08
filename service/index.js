@@ -3,12 +3,12 @@ const crypto = require('crypto');
 const express = require('express');
 const cookieParser = require('cookie-parser');
 const bcrypt = require('bcryptjs');
+const { isValidRound, scoreRound } = require('./scoring');
 
 const app = express();
 
 const AUTH_COOKIE_NAME = 'token';
 const BCRYPT_SALT_ROUNDS = 10;
-const MAX_SCORE = 1000;
 const LEADERBOARD_SIZE = 10;
 
 // Fake players so the leaderboard isn't empty on a freshly started server.
@@ -128,19 +128,22 @@ apiRouter.get('/scores/mine', verifyAuth, (req, res) => {
   res.send(history);
 });
 
-// Restricted: save a finished round. The name and date are set here, not taken
-// from the request, so a player can only post scores as themselves.
+// Restricted: save a finished round. The client sends what happened on each
+// tone ({ tones: [{ target, guess, timeMs }, ...] }) and the server computes
+// the score itself, so posting a made-up score doesn't work. The name and date
+// are set here too, so a player can only post rounds as themselves.
 apiRouter.post('/score', verifyAuth, (req, res) => {
-  const { score, accuracy, avgTimeMs } = req.body ?? {};
-  if (!isNumberBetween(score, 0, MAX_SCORE) || !isNumberBetween(accuracy, 0, 1) || !isNumberBetween(avgTimeMs, 0, Infinity)) {
-    return res.status(400).send({ msg: 'Invalid score.' });
+  const { tones } = req.body ?? {};
+  if (!isValidRound(tones)) {
+    return res.status(400).send({ msg: 'Invalid round.' });
   }
 
+  const { score, accuracy, avgTimeMs } = scoreRound(tones);
   const entry = {
     name: req.user.userName,
-    score: Math.round(score),
+    score,
     accuracy,
-    avgTimeMs: Math.round(avgTimeMs),
+    avgTimeMs,
     date: new Date().toISOString(),
   };
   scores.push(entry);
@@ -151,11 +154,6 @@ apiRouter.post('/score', verifyAuth, (req, res) => {
 
 function isNonEmptyString(value) {
   return typeof value === 'string' && value.trim() !== '';
-}
-
-// Rejects strings, NaN, null, etc. ("500" is not a number here.)
-function isNumberBetween(value, min, max) {
-  return typeof value === 'number' && Number.isFinite(value) && value >= min && value <= max;
 }
 
 // Each player's best round, highest first, top LEADERBOARD_SIZE only.
