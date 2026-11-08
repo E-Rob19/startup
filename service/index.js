@@ -51,7 +51,7 @@ app.use(express.static(publicDir));
 const apiRouter = express.Router();
 app.use('/api', apiRouter);
 
-// Temporary endpoint to prove the service is running.
+// Quick check that the service is up (handy after deploying).
 apiRouter.get('/health', (_req, res) => {
   res.send({ ok: true });
 });
@@ -150,6 +150,13 @@ apiRouter.post('/score', verifyAuth, (req, res) => {
   res.send(entry);
 });
 
+// Unknown /api path: answer with a JSON 404. Without this, the request would
+// fall through to the index.html fallback below and get a 200 with HTML.
+// Must stay after every apiRouter route.
+apiRouter.use((req, res) => {
+  res.status(404).send({ msg: `No API endpoint for ${req.method} ${req.originalUrl}.` });
+});
+
 // --- Helpers ---
 
 function isNonEmptyString(value) {
@@ -201,6 +208,18 @@ function setAuthCookie(res, token) {
 // middleware so it only catches what they didn't handle.
 app.use((_req, res) => {
   res.sendFile('index.html', { root: publicDir });
+});
+
+// Error handler: Express sends any thrown error (including from async
+// handlers, in Express 5) here, recognizing it by the 4 parameters.
+// Client mistakes like malformed JSON already carry a 4xx status; anything
+// else is our bug, so log it but don't send its details to the browser.
+app.use((err, _req, res, _next) => {
+  const status = err.status >= 400 && err.status < 500 ? err.status : 500;
+  if (status === 500) {
+    console.error(err);
+  }
+  res.status(status).send({ msg: status === 500 ? 'Something went wrong on the server.' : 'Invalid request.' });
 });
 
 app.listen(port, () => {

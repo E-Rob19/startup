@@ -26,6 +26,7 @@ function recentRounds() {
 
 export function Leaderboard({ userName }) {
   const [scores, setScores] = React.useState(null); // null while loading
+  const [loadError, setLoadError] = React.useState('');
   const [feed, setFeed] = React.useState(() => GameNotifier.getRecentEvents());
 
   // Load the leaderboard from the server, then listen for live events.
@@ -37,9 +38,14 @@ export function Leaderboard({ userName }) {
     // Recent live rounds (kept by the notifier, even while this page was
     // closed) are merged in too, so a fake player's new best doesn't vanish
     // when you leave and come back.
-    getLeaderboard().then((leaderboard) => {
-      if (!ignore) setScores(mergeRounds(leaderboard, recentRounds()));
-    });
+    getLeaderboard()
+      .then((leaderboard) => {
+        if (!ignore) setScores(mergeRounds(leaderboard, recentRounds()));
+      })
+      .catch((err) => {
+        // The live feed below keeps working; only the table is missing.
+        if (!ignore) setLoadError(err.message);
+      });
 
     function handleGameEvent(event) {
       setFeed(GameNotifier.getRecentEvents());
@@ -60,7 +66,9 @@ export function Leaderboard({ userName }) {
       <section id="leaderboard">
         <h2>Global Leaderboard</h2>
         <p><small>Each player's best round.</small></p>
-        {scores === null ? (
+        {loadError ? (
+          <p className="text-danger" role="alert">{loadError}</p>
+        ) : scores === null ? (
           <p>Loading scores…</p>
         ) : scores.length === 0 ? (
           <p>No scores yet. Be the first!</p>

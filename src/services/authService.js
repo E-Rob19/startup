@@ -35,6 +35,11 @@ async function sendAuthRequest(method, path, body) {
     throw new Error("Can't reach the server. Please try again in a moment.");
   }
 
+  // 502/503/504: the proxy in front of our service (Caddy, or Vite in
+  // development) is up, but the service behind it isn't.
+  if ([502, 503, 504].includes(response.status)) {
+    throw new Error("Can't reach the server. Please try again in a moment.");
+  }
   if (response.status === 204) return null;
   const data = await response.json().catch(() => ({}));
   if (!response.ok) {

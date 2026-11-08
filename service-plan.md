@@ -124,9 +124,9 @@ There is one commit per step (or more), about 15 in all, which covers the "at le
 - [x] Remove the fake-latency code. `lookupNote` is now a plain **synchronous** function (no "Looking up…" state), since it's just math.
 
 ### Step 13: Error handling and polish
-- [ ] Express error-handling middleware that returns `{ msg }` with a 500, plus a JSON 404 for unknown `/api/*` routes, so the HTML fallback from step 3 doesn't answer API typos.
-- [ ] Frontend: a "Can't reach the server" message on the Leaderboard and Profile when `fetch` itself fails.
-- [ ] Remove `/api/health` (or keep it, it's harmless).
+- [x] Express error-handling middleware that returns `{ msg }` with a 500, plus a JSON 404 for unknown `/api/*` routes, so the HTML fallback from step 3 doesn't answer API typos. (Client errors like malformed JSON keep their 4xx status: 400 "Invalid request." A 500 logs the error on the server but doesn't send its details to the browser.)
+- [x] Frontend: a "Can't reach the server" message on the Leaderboard and Profile when `fetch` itself fails. **Also** for 502/503/504, which is what Vite's proxy (and Caddy in production) returns when the backend is down. Applied to `authService` too. The Leaderboard's live feed keeps working even if the table fails to load.
+- [x] ~~Remove~~ **Kept** `/api/health`. It's harmless and handy for checking a deploy.
 
 ### Step 14: Deploy script
 - [ ] Get `deployService.sh` from the Simon service repo (like you did for `deployReact.sh`). It builds the frontend into `service/public`, copies `service/` to the server, runs `npm install` there, and restarts the service with `pm2`.

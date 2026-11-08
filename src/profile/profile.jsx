@@ -5,6 +5,7 @@ import { formatDate, formatPercent, formatSeconds } from '../format';
 
 export function Profile({ userName, onSessionExpired }) {
   const [history, setHistory] = React.useState(null); // null while loading
+  const [loadError, setLoadError] = React.useState('');
 
   React.useEffect(() => {
     let ignore = false;
@@ -13,8 +14,13 @@ export function Profile({ userName, onSessionExpired }) {
         if (!ignore) setHistory(rounds);
       })
       .catch((err) => {
-        // Session gone: logging out makes App's /profile route redirect to Login.
-        if (!ignore && err instanceof UnauthorizedError) onSessionExpired();
+        if (ignore) return;
+        if (err instanceof UnauthorizedError) {
+          // Session gone: logging out makes App's /profile route redirect to Login.
+          onSessionExpired();
+        } else {
+          setLoadError(err.message);
+        }
       });
     return () => {
       ignore = true;
@@ -40,7 +46,9 @@ export function Profile({ userName, onSessionExpired }) {
 
       <section id="round-history">
         <h2>Round History</h2>
-        {history === null ? (
+        {loadError ? (
+          <p className="text-danger" role="alert">{loadError}</p>
+        ) : history === null ? (
           <p>Loading your rounds…</p>
         ) : history.length === 0 ? (
           <p>No rounds yet. <NavLink to="/game">Go play one!</NavLink></p>

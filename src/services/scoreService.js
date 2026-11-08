@@ -10,15 +10,30 @@ export class UnauthorizedError extends Error {
   }
 }
 
+const UNREACHABLE_MESSAGE = "Can't reach the server. Please try again in a moment.";
+
+// 502/503/504 come from whatever sits in front of our service (Caddy in
+// production, Vite's proxy in development) when the service itself is down.
+const GATEWAY_ERRORS = [502, 503, 504];
+
 async function sendScoreRequest(method, path, body) {
-  const response = await fetch(`/api/${path}`, {
-    method,
-    headers: body ? { 'Content-Type': 'application/json' } : undefined,
-    body: body ? JSON.stringify(body) : undefined,
-  });
+  let response;
+  try {
+    response = await fetch(`/api/${path}`, {
+      method,
+      headers: body ? { 'Content-Type': 'application/json' } : undefined,
+      body: body ? JSON.stringify(body) : undefined,
+    });
+  } catch {
+    // fetch only rejects when the request couldn't be sent at all.
+    throw new Error(UNREACHABLE_MESSAGE);
+  }
 
   if (response.status === 401) {
     throw new UnauthorizedError();
+  }
+  if (GATEWAY_ERRORS.includes(response.status)) {
+    throw new Error(UNREACHABLE_MESSAGE);
   }
   const data = await response.json().catch(() => ({}));
   if (!response.ok) {
