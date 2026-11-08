@@ -90,9 +90,11 @@ There is one commit per step (or more), about 15 in all, which covers the "at le
   - **Known limit:** the browser plays the tones, so it knows the targets, and a determined cheater could still send `guess = target`. Fully closing that would need server-issued targets per round. Not planned unless you want it.
 
 ### Step 8: Frontend auth uses the service
-- [ ] Rewrite `authService.js` so `register`, `login`, and `logout` call `fetch` (`credentials` are sent automatically on the same origin). On a non-OK response, throw `new Error(body.msg)` so the existing error messages in Login and Create Account keep working unchanged.
-- [ ] Keep `earshot.userName` in localStorage only as a UI hint so the navbar renders immediately. The cookie is the real proof of login.
-- [ ] Remove the old `earshot.users` localStorage code.
+- [x] Rewrite `authService.js` so `register`, `login`, and `logout` call `fetch` (`credentials` are sent automatically on the same origin). On a non-OK response, throw `new Error(body.msg)` so the existing error messages in Login and Create Account keep working unchanged. (No component changes were needed.)
+- [x] Keep `earshot.userName` in localStorage only as a UI hint so the navbar renders immediately. The cookie is the real proof of login.
+- [x] Remove the old `earshot.users` localStorage code.
+- [x] **Extra:** a friendly "Can't reach the server" error when `fetch` fails, and `logout()` always logs out locally even if the server is down.
+- Note: if you had an old `earshot.users` key in your browser from the mock, it's just leftover junk now. Clear it in DevTools if you like.
 
 ### Step 9: Frontend scores use the service
 - [ ] `scoreService.js`: `getLeaderboard` → `GET /api/scores`, `getHistory` → `GET /api/scores/mine`, `saveScore` → `POST /api/score`.

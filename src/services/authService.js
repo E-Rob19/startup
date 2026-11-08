@@ -1,19 +1,12 @@
-// Mock auth service. Users are kept in localStorage until the backend exists.
-// Each function is async so the components can later switch to fetch() calls
-// without changing how they use these.
+// Auth service: talks to the backend's /api/auth endpoints.
+// The server checks passwords (bcrypt) and sets an httpOnly cookie that proves
+// who is logged in; the browser sends that cookie automatically on every
+// /api request, so this code never sees or handles the token itself.
 
-// Keys are prefixed so they can't collide with other apps on the same origin
-// (e.g. Simon, which also runs on localhost:5173 during development).
-const USERS_KEY = 'earshot.users';
+// Only a UI hint: remembers the name so the navbar can render immediately on
+// page load. The cookie is the real proof of login. Prefixed so it can't
+// collide with Simon's 'userName' on localhost:5173.
 const USER_NAME_KEY = 'earshot.userName';
-
-function getUsers() {
-  try {
-    return JSON.parse(localStorage.getItem(USERS_KEY)) || {};
-  } catch {
-    return {};
-  }
-}
 
 // Who is logged in right now, or '' if nobody. Synchronous because App
 // needs it immediately on startup.
@@ -21,26 +14,49 @@ export function getStoredUserName() {
   return localStorage.getItem(USER_NAME_KEY) || '';
 }
 
-export async function register(userName, password) {
-  const users = getUsers();
-  if (users[userName]) {
-    throw new Error('That username is already taken.');
+// Sends a JSON request to the service. Returns the parsed response body, or
+// throws an Error whose message the pages can show as-is.
+async function sendAuthRequest(method, path, body) {
+  let response;
+  try {
+    response = await fetch(`/api/auth/${path}`, {
+      method,
+      headers: { 'Content-Type': 'application/json' },
+      body: body ? JSON.stringify(body) : undefined,
+    });
+  } catch {
+    // fetch itself only rejects when the request couldn't be sent at all.
+    throw new Error("Can't reach the server. Please try again in a moment.");
   }
-  users[userName] = password;
-  localStorage.setItem(USERS_KEY, JSON.stringify(users));
-  localStorage.setItem(USER_NAME_KEY, userName);
-  return { userName };
+
+  if (response.status === 204) return null;
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    throw new Error(data.msg || 'Something went wrong. Please try again.');
+  }
+  return data;
+}
+
+export async function register(userName, password) {
+  const user = await sendAuthRequest('POST', 'create', { userName, password });
+  localStorage.setItem(USER_NAME_KEY, user.userName);
+  return user;
 }
 
 export async function login(userName, password) {
-  const users = getUsers();
-  if (!users[userName] || users[userName] !== password) {
-    throw new Error('Incorrect username or password.');
-  }
-  localStorage.setItem(USER_NAME_KEY, userName);
-  return { userName };
+  const user = await sendAuthRequest('PUT', 'login', { userName, password });
+  localStorage.setItem(USER_NAME_KEY, user.userName);
+  return user;
 }
 
+// Always logs out locally, even if the server can't be reached, so the
+// Logout button never gets stuck.
 export async function logout() {
   localStorage.removeItem(USER_NAME_KEY);
+  try {
+    await sendAuthRequest('DELETE', 'logout');
+  } catch {
+    // Ignore: the cookie is httpOnly, so the server is the only one who can
+    // clear it, but the user is logged out as far as this app is concerned.
+  }
 }
