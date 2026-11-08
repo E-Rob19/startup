@@ -54,8 +54,8 @@ There is one commit per step (or more), about 15 in all, which covers the "at le
 - [x] Test: `node index.js`, then open `http://localhost:4000/api/health`.
 
 ### Step 2: Vite dev proxy
-- [ ] Add a `vite.config.js` that proxies `/api` to `http://localhost:4000`. This lets the React dev server on 5173 call the backend without CORS problems.
-- [ ] Test: run both servers (`node index.js` in `service/` and `npm run dev` at the root), then fetch `/api/health` from the browser console on 5173.
+- [x] Add a ~~`vite.config.js`~~ **`vite.config.mjs`** that proxies `/api` to `http://localhost:4000`. This lets the React dev server on 5173 call the backend without CORS problems. (Used `.mjs` because the root `package.json` is `"type": "commonjs"`, and Vite warned about ESM syntax in a `.js` config.)
+- [x] Test: run both servers (`node index.js` in `service/` and `npm run dev` at the root), then fetch `/api/health` from the browser console on 5173.
 
 ### Step 3: Static middleware for the frontend
 - [ ] `app.use(express.static('public'))` so the service serves the built React bundle.
