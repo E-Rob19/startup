@@ -64,10 +64,10 @@ There is one commit per step (or more), about 15 in all, which covers the "at le
 - [x] Test: `npm run build`, copy `dist/*` into `service/public`, and open `http://localhost:4000/leaderboard` directly.
 
 ### Step 4: Registration with bcrypt
-- [ ] `npm install bcryptjs uuid cookie-parser` (in `service/`), and add `app.use(cookieParser())`.
-- [ ] Add an in-memory `users` array of `{ userName, passwordHash, token }`.
-- [ ] `POST /api/auth/create`: return 400 if a field is missing and 409 if the name is taken. Otherwise `bcrypt.hash(password, 10)`, create a `uuid` token, and set the cookie (`httpOnly`, `secure`, `sameSite: 'strict'`). Return `{ userName }`.
-- [ ] Test with `curl` or the browser console. A logged user should show a hash, never the plain password.
+- [x] `npm install bcryptjs ~~uuid~~ cookie-parser` (in `service/`), and add `app.use(cookieParser())`. (**Changed:** skipped `uuid`, because its current version is ESM-only and can't be loaded with `require`. Node's built-in `crypto.randomUUID()` does the same thing.)
+- [x] Add an in-memory `users` array of `{ userName, passwordHash, token }`.
+- [x] `POST /api/auth/create`: return 400 if a field is missing (or isn't a string) and 409 if the name is taken. Otherwise `bcrypt.hash(password, 10)`, create a random UUID token, and set the cookie (`httpOnly`, `secure`, `sameSite: 'strict'`). Return `{ userName }`.
+- [x] Test with `curl`: new user → 200 + `Set-Cookie`, duplicate → 409, missing, absent, or wrong-type fields → 400.
 
 ### Step 5: Login and logout
 - [ ] `PUT /api/auth/login`: look up the user and check `bcrypt.compare`. On success, issue a new token and set the cookie. On failure, return 401 with `{ msg: 'Incorrect username or password.' }`. Return the same message for both cases so the response doesn't reveal which usernames exist.
