@@ -70,8 +70,9 @@ There is one commit per step (or more), about 15 in all, which covers the "at le
 - [x] Test with `curl`: new user → 200 + `Set-Cookie`, duplicate → 409, missing, absent, or wrong-type fields → 400.
 
 ### Step 5: Login and logout
-- [ ] `PUT /api/auth/login`: look up the user and check `bcrypt.compare`. On success, issue a new token and set the cookie. On failure, return 401 with `{ msg: 'Incorrect username or password.' }`. Return the same message for both cases so the response doesn't reveal which usernames exist.
-- [ ] `DELETE /api/auth/logout`: find the user by cookie token, delete their token, call `res.clearCookie`, and return 204.
+- [x] `PUT /api/auth/login`: look up the user and check `bcrypt.compare`. On success, issue a new token and set the cookie. On failure, return 401 with `{ msg: 'Incorrect username or password.' }`. Return the same message for both cases so the response doesn't reveal which usernames exist.
+- [x] `DELETE /api/auth/logout`: find the user by cookie token, delete their token, call `res.clearCookie`, and return 204. (Always 204, even with no cookie, so the frontend can always call it.)
+- [x] Test with `curl`: wrong password, unknown user, and no body → 401 with the same message. Correct login → 200 + new cookie. Logout → 204 + cookie cleared. Step 6's `/api/user/me` will confirm that the token is really gone.
 
 ### Step 6: Restricted endpoint middleware
 - [ ] `verifyAuth` middleware: find the user whose token matches `req.cookies.token`. If there is one, attach it as `req.user`. If not, return 401.

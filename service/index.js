@@ -55,6 +55,33 @@ apiRouter.post('/auth/create', async (req, res) => {
   res.send({ userName: user.userName });
 });
 
+// Log in: check the password against the stored hash, then issue a fresh token.
+apiRouter.put('/auth/login', async (req, res) => {
+  const { userName, password } = req.body ?? {};
+  const user = isNonEmptyString(userName) ? findUser('userName', userName) : null;
+
+  // Same message whether the name or the password was wrong, so the response
+  // doesn't reveal which usernames exist.
+  if (!user || !isNonEmptyString(password) || !(await bcrypt.compare(password, user.passwordHash))) {
+    return res.status(401).send({ msg: 'Incorrect username or password.' });
+  }
+
+  user.token = crypto.randomUUID();
+  setAuthCookie(res, user.token);
+  res.send({ userName: user.userName });
+});
+
+// Log out: forget the token on the server and tell the browser to drop the cookie.
+// Always succeeds, even if they weren't logged in, so the frontend can call it freely.
+apiRouter.delete('/auth/logout', (req, res) => {
+  const user = findUser('token', req.cookies[AUTH_COOKIE_NAME]);
+  if (user) {
+    delete user.token;
+  }
+  res.clearCookie(AUTH_COOKIE_NAME);
+  res.status(204).end();
+});
+
 // --- Helpers ---
 
 function isNonEmptyString(value) {
