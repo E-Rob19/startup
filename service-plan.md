@@ -58,10 +58,10 @@ There is one commit per step (or more), about 15 in all, which covers the "at le
 - [x] Test: run both servers (`node index.js` in `service/` and `npm run dev` at the root), then fetch `/api/health` from the browser console on 5173.
 
 ### Step 3: Static middleware for the frontend
-- [ ] `app.use(express.static('public'))` so the service serves the built React bundle.
-- [ ] Add a catch-all fallback that sends `public/index.html` for any unknown non-API route. Without it, refreshing on `/leaderboard` in production returns a 404 instead of letting React Router handle the route.
-- [ ] Add `service/public` to `.gitignore`. The deploy script fills it in.
-- [ ] Test: `npm run build`, copy `dist/*` into `service/public`, and open `http://localhost:4000/leaderboard` directly.
+- [x] `app.use(express.static('public'))` so the service serves the built React bundle. (Uses `path.join(__dirname, 'public')`, so it works from any working directory.)
+- [x] Add a catch-all fallback that sends `public/index.html` for any unknown non-API route. Without it, refreshing on `/leaderboard` in production returns a 404 instead of letting React Router handle the route. (Express 5 dropped `app.get('*')`, so this is a final `app.use(...)`. For now it also answers unknown `/api` paths with HTML. Step 13 fixes that.)
+- [x] Add `service/public` to `.gitignore`. The deploy script fills it in.
+- [x] Test: `npm run build`, copy `dist/*` into `service/public`, and open `http://localhost:4000/leaderboard` directly.
 
 ### Step 4: Registration with bcrypt
 - [ ] `npm install bcryptjs uuid cookie-parser` (in `service/`), and add `app.use(cookieParser())`.
