@@ -77,9 +77,10 @@ There is one commit per step, about 15 in all, which covers the 12-commit goal. 
 - From now on, run the backend locally with `npm run dev` (not `npm start`), so test data stays out of the live database.
 
 ### Step 3: Users and credentials in MongoDB
-- [ ] `database.js`: `getUserByName`, `getUserByToken`, `addUser`, `setUserToken`, `clearUserToken`.
-- [ ] `index.js`: `findUser` becomes async, and create, login, logout, and `verifyAuth` all `await` it. Delete the `users` array.
-- [ ] Test with `curl`: register → log in → `/api/user/me` → **restart the server** → `/api/user/me` with the same cookie still works (it would 401 today). Check the Atlas "Browse Collections" page: the user doc holds a bcrypt hash, not the password.
+- [x] `database.js`: `getUserByName`, `getUserByToken`, `addUser`, `setUserToken`, `clearUserToken`.
+- [x] `index.js`: `findUser` becomes async, and create, login, logout, and `verifyAuth` all `await` it. Delete the `users` array.
+- [x] **Extra (security):** `findUser` only looks up plain strings. `cookie-parser` turns a cookie like `token=j:{"$ne":null}` into the object `{ $ne: null }`, which Mongo would read as "any user whose token isn't null". That would log an attacker in as a random logged-in user.
+- [x] Test (scripted, against `earshot-dev`, with the test user cleaned up afterward): register → log in → `/api/user/me` → **restart the server** → `/api/user/me` with the same cookie still works (it would have returned 401 before this step). The user doc holds a bcrypt hash, not the password. Also: the forged cookie and `{ $ne: null }` login both return 401, and logout removes the token from the doc. (21/21 checks passed.)
 
 ### Step 4: Unique usernames, enforced by the database
 - [ ] On connect, `createIndex({ userName: 1 }, { unique: true })` and `createIndex({ token: 1 })`.

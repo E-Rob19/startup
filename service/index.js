@@ -37,9 +37,8 @@ const port = process.argv.length > 2 ? process.argv[2] : 4000;
 // database; `npm run dev` passes 'earshot-dev' so local testing stays separate.
 const dbName = process.argv.length > 3 ? process.argv[3] : 'earshot';
 
-// In-memory data for now; MongoDB replaces this in the DB deliverable.
-// Each user: { userName, passwordHash, token }
-const users = [];
+// Users are stored in MongoDB (see database.js).
+// Rounds are still in memory until they move to MongoDB in later steps.
 // Each round: { name, score, accuracy, avgTimeMs, date }
 const scores = [...SEED_SCORES];
 
@@ -68,7 +67,7 @@ apiRouter.post('/auth/create', async (req, res) => {
   if (!isNonEmptyString(userName) || !isNonEmptyString(password)) {
     return res.status(400).send({ msg: 'Username and password are required.' });
   }
-  if (findUser('userName', userName)) {
+  if (await findUser('userName', userName)) {
     return res.status(409).send({ msg: 'That username is already taken.' });
   }
 
@@ -80,7 +79,7 @@ apiRouter.post('/auth/create', async (req, res) => {
 // Log in: check the password against the stored hash, then issue a fresh token.
 apiRouter.put('/auth/login', async (req, res) => {
   const { userName, password } = req.body ?? {};
-  const user = isNonEmptyString(userName) ? findUser('userName', userName) : null;
+  const user = isNonEmptyString(userName) ? await findUser('userName', userName) : null;
 
   // Same message whether the name or the password was wrong, so the response
   // doesn't reveal which usernames exist.
@@ -88,17 +87,18 @@ apiRouter.put('/auth/login', async (req, res) => {
     return res.status(401).send({ msg: 'Incorrect username or password.' });
   }
 
-  user.token = crypto.randomUUID();
-  setAuthCookie(res, user.token);
+  const token = crypto.randomUUID();
+  await DB.setUserToken(user.userName, token);
+  setAuthCookie(res, token);
   res.send({ userName: user.userName });
 });
 
 // Log out: forget the token on the server and tell the browser to drop the cookie.
 // Always succeeds, even if they weren't logged in, so the frontend can call it freely.
-apiRouter.delete('/auth/logout', (req, res) => {
-  const user = findUser('token', req.cookies[AUTH_COOKIE_NAME]);
+apiRouter.delete('/auth/logout', async (req, res) => {
+  const user = await findUser('token', req.cookies[AUTH_COOKIE_NAME]);
   if (user) {
-    delete user.token;
+    await DB.clearUserToken(user.userName);
   }
   res.clearCookie(AUTH_COOKIE_NAME);
   res.status(204).end();
@@ -106,8 +106,8 @@ apiRouter.delete('/auth/logout', (req, res) => {
 
 // Middleware for restricted endpoints: only lets the request through if the
 // auth cookie belongs to a logged-in user, and attaches that user as req.user.
-function verifyAuth(req, res, next) {
-  const user = findUser('token', req.cookies[AUTH_COOKIE_NAME]);
+async function verifyAuth(req, res, next) {
+  const user = await findUser('token', req.cookies[AUTH_COOKIE_NAME]);
   if (!user) {
     return res.status(401).send({ msg: 'Please log in.' });
   }
@@ -184,9 +184,15 @@ function getLeaderboard() {
 }
 
 // findUser('userName', 'emma') or findUser('token', req.cookies.token)
-function findUser(field, value) {
-  if (!value) return null;
-  return users.find((user) => user[field] === value) ?? null;
+// Resolves to the user document, or null.
+//
+// Only plain strings are looked up. cookie-parser turns a cookie that starts
+// with "j:" into a parsed object, so a forged cookie `token=j:{"$ne":null}`
+// would arrive as { $ne: null }. Passed to Mongo as-is, that means "any user
+// whose token is not null", which would log the attacker in as someone else.
+async function findUser(field, value) {
+  if (!isNonEmptyString(value)) return null;
+  return field === 'token' ? DB.getUserByToken(value) : DB.getUserByName(value);
 }
 
 // Only the bcrypt hash is stored, never the plain-text password.
@@ -196,7 +202,7 @@ async function createUser(userName, password) {
     passwordHash: await bcrypt.hash(password, BCRYPT_SALT_ROUNDS),
     token: crypto.randomUUID(),
   };
-  users.push(user);
+  await DB.addUser(user);
   return user;
 }
 

@@ -17,12 +17,48 @@ const url =
 const client = new MongoClient(url, { serverSelectionTimeoutMS: 5000 });
 
 let db; // set by connect()
+let userCollection; // { userName, passwordHash, token }
 
 // Picks the database (e.g. 'earshot' or 'earshot-dev') and checks that the
 // server is reachable and the login works. Rejects if it isn't.
 async function connect(dbName) {
   db = client.db(dbName);
   await db.command({ ping: 1 });
+  userCollection = db.collection('user');
 }
 
-module.exports = { connect };
+// --- Users ---
+// Callers must pass plain strings (index.js checks), so a value like
+// { $ne: null } can never be slipped into a query.
+
+// Resolves to the user document, or null if there's no such user.
+function getUserByName(userName) {
+  return userCollection.findOne({ userName });
+}
+
+function getUserByToken(token) {
+  return userCollection.findOne({ token });
+}
+
+function addUser(user) {
+  return userCollection.insertOne(user);
+}
+
+// $set changes just the token field and leaves the rest of the document alone.
+function setUserToken(userName, token) {
+  return userCollection.updateOne({ userName }, { $set: { token } });
+}
+
+// $unset removes the token field entirely (logging out).
+function clearUserToken(userName) {
+  return userCollection.updateOne({ userName }, { $unset: { token: '' } });
+}
+
+module.exports = {
+  connect,
+  getUserByName,
+  getUserByToken,
+  addUser,
+  setUserToken,
+  clearUserToken,
+};
