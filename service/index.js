@@ -4,6 +4,7 @@ const express = require('express');
 const cookieParser = require('cookie-parser');
 const bcrypt = require('bcryptjs');
 const { isValidRound, scoreRound } = require('./scoring');
+const DB = require('./database');
 
 const app = express();
 
@@ -30,6 +31,11 @@ const publicDir = path.join(__dirname, 'public');
 // The port can be passed on the command line (`node index.js 4000`).
 // 4000 is the startup's port by course convention (Simon uses 3000).
 const port = process.argv.length > 2 ? process.argv[2] : 4000;
+
+// The database name can be passed next (`node index.js 4000 earshot-dev`).
+// The deployed service is started without it, so it uses the live 'earshot'
+// database; `npm run dev` passes 'earshot-dev' so local testing stays separate.
+const dbName = process.argv.length > 3 ? process.argv[3] : 'earshot';
 
 // In-memory data for now; MongoDB replaces this in the DB deliverable.
 // Each user: { userName, passwordHash, token }
@@ -222,6 +228,17 @@ app.use((err, _req, res, _next) => {
   res.status(status).send({ msg: status === 500 ? 'Something went wrong on the server.' : 'Invalid request.' });
 });
 
-app.listen(port, () => {
-  console.log(`EarShot service listening on port ${port}`);
-});
+// Connect to MongoDB first, and only start accepting requests once that works.
+// If it fails, there's no point running: every endpoint needs the database.
+// Only the error message is logged, never the connection URL (it contains the password).
+DB.connect(dbName)
+  .then(() => {
+    console.log(`Connected to MongoDB (${dbName})`);
+    app.listen(port, () => {
+      console.log(`EarShot service listening on port ${port}`);
+    });
+  })
+  .catch((err) => {
+    console.error(`Unable to connect to MongoDB (${dbName}): ${err.message}`);
+    process.exit(1);
+  });

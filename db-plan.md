@@ -22,7 +22,7 @@ The endpoints don't change, so **the frontend doesn't need any changes** apart f
 | `service/database.js` | **New.** Owns the MongoDB connection and every query. `index.js` never touches Mongo directly (same split as Simon). |
 | `service/dbConfig.json` | **New, never committed.** Atlas hostname, username, and password. |
 | `service/index.js` | Arrays removed. Every lookup becomes an `await DB.something()` call. |
-| `.gitignore` | Ignores `service/dbConfig.json` and `db-explanations.md` |
+| `.gitignore` | Ignores `service/dbConfig.json` and `db-explanations.md` (now the whole `explanations/` folder) |
 
 ## How it differs from Simon
 
@@ -63,17 +63,17 @@ There is one commit per step, about 15 in all, which covers the 12-commit goal. 
 - [ ] Commit `db-plan.md`.
 
 ### Step 1: Keep the secret out of git, then install the driver
-- [x] Add `service/dbConfig.json` (and `db-explanations.md`) to `.gitignore` **before** the file exists, and confirm with `git check-ignore -v service/dbConfig.json`.
+- [x] Add `service/dbConfig.json` (and `db-explanations.md`, later replaced by ignoring the whole `explanations/` folder) to `.gitignore` **before** the file exists, and confirm with `git check-ignore -v service/dbConfig.json`.
 - [x] Create `service/dbConfig.json` with `{ hostname, userName, password }`. Reuse the Atlas cluster and database user from Simon (copy `../simon-db/service/dbConfig.json`). I'll copy it without printing it. The database itself is new (`earshot` / `earshot-dev`). Mongo creates it the first time something is written to it.
 - [x] `npm install mongodb` in `service/`. (Got `mongodb@7.9.0`. Unlike `uuid`, it still works with `require`. It needs **Node 20.19 or newer**, which gets checked on the server in step 13.)
 - [x] Test: `git status` doesn't list `dbConfig.json`.
 - Note: `deployService.sh` already does `cp service/*.json build`, so the config reaches the server without any script changes.
 
 ### Step 2: Connect before listening
-- [ ] `service/database.js`: build the `mongodb+srv://` URL from the config, create one `MongoClient`, and export a `connect(dbName)` that pings the server.
-- [ ] **Dev vs prod database:** `node index.js [port] [dbName]`. The database name comes from the command line, like the port, and defaults to `earshot`, so the deployed pm2 service uses the live database with no setup changes. Add an `npm run dev` script in `service/package.json` that runs `node index.js 4000 earshot-dev` for local work.
-- [ ] `index.js`: `await DB.connect(dbName)` and **then** `app.listen`. If the connection fails, log a clear message (without the URL) and exit.
-- [ ] Test: `npm run dev` prints "Connected to MongoDB (earshot-dev)". Then break the password in a copy of the config, and the server should exit with a readable error.
+- [x] `service/database.js`: build the `mongodb+srv://` URL from the config, create one `MongoClient`, and export a `connect(dbName)` that pings the server. (**Extra:** the username and password are URL-encoded, so special characters can't break the URL, and a 5-second `serverSelectionTimeoutMS` makes an unreachable cluster fail fast instead of after 30 s.)
+- [x] **Dev vs prod database:** `node index.js [port] [dbName]`. The database name comes from the command line, like the port, and defaults to `earshot`, so the deployed pm2 service uses the live database with no setup changes. Add an `npm run dev` script in `service/package.json` that runs `node index.js 4000 earshot-dev` for local work.
+- [x] `index.js`: `await DB.connect(dbName)` and **then** `app.listen`. If the connection fails, log a clear message (without the URL) and exit.
+- [x] Test: `npm run dev` prints "Connected to MongoDB (earshot-dev)". Then break the password in a copy of the config, and the server should exit with a readable error. (Also tested an unreachable hostname. Both exit with code 1 and never start listening.)
 - From now on, run the backend locally with `npm run dev` (not `npm start`), so test data stays out of the live database.
 
 ### Step 3: Users and credentials in MongoDB
@@ -144,4 +144,4 @@ There is one commit per step, about 15 in all, which covers the 12-commit goal. 
 2. **Dev vs prod data:** the live site uses `earshot`, and local runs use `earshot-dev` (chosen by a command-line argument, see step 2), so test accounts never show up on the live leaderboard.
 3. **Per-tone results:** stored for each player's **5 most recent rounds** only, so the database doesn't grow without limit (step 6). The score record for every round is kept. The Profile shows them behind a show/hide arrow per round (step 12).
 4. **Usernames stay case-sensitive** (`Emma` and `emma` are different accounts), the same as now.
-5. **Explanations** go in a new `db-explanations.md` (gitignored), the same as the earlier stages.
+5. **Explanations** go in `explanations/db-explanations.md`. The whole `explanations/` folder (all stages) is gitignored.

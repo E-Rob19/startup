@@ -1,7 +1,5 @@
 node_modules/
 dist/
-reactivity-explanations.md
-service-explanations.md
 service/public/
-db-explanations.md
+explanations/
 service/dbConfig.json
