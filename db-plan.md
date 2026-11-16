@@ -63,10 +63,10 @@ There is one commit per step, about 15 in all, which covers the 12-commit goal. 
 - [ ] Commit `db-plan.md`.
 
 ### Step 1: Keep the secret out of git, then install the driver
-- [ ] Add `service/dbConfig.json` (and `db-explanations.md`) to `.gitignore` **before** the file exists, and confirm with `git check-ignore -v service/dbConfig.json`.
-- [ ] Create `service/dbConfig.json` with `{ hostname, userName, password }`. Reuse the Atlas cluster and database user from Simon (copy `../simon-db/service/dbConfig.json`). I'll copy it without printing it. The database itself is new (`earshot` / `earshot-dev`). Mongo creates it the first time something is written to it.
-- [ ] `npm install mongodb` in `service/`.
-- [ ] Test: `git status` doesn't list `dbConfig.json`.
+- [x] Add `service/dbConfig.json` (and `db-explanations.md`) to `.gitignore` **before** the file exists, and confirm with `git check-ignore -v service/dbConfig.json`.
+- [x] Create `service/dbConfig.json` with `{ hostname, userName, password }`. Reuse the Atlas cluster and database user from Simon (copy `../simon-db/service/dbConfig.json`). I'll copy it without printing it. The database itself is new (`earshot` / `earshot-dev`). Mongo creates it the first time something is written to it.
+- [x] `npm install mongodb` in `service/`. (Got `mongodb@7.9.0`. Unlike `uuid`, it still works with `require`. It needs **Node 20.19 or newer**, which gets checked on the server in step 13.)
+- [x] Test: `git status` doesn't list `dbConfig.json`.
 - Note: `deployService.sh` already does `cp service/*.json build`, so the config reaches the server without any script changes.
 
 ### Step 2: Connect before listening
@@ -128,6 +128,7 @@ There is one commit per step, about 15 in all, which covers the 12-commit goal. 
 
 ### Step 13: Deploy
 - [ ] In Atlas **Network Access**, check that the EC2 server's IP is allowed (Simon's setup may already allow it).
+- [ ] Check `node -v` on the server is 20.19 or newer (the `mongodb` 7 driver requires it).
 - [ ] Deploy (you, by hand): `./deployService.sh -k <key> -h earshot.click -s startup`.
 - [ ] Test on the live site: create an account, play a round, then redeploy (or `pm2 restart startup`) and confirm the account, the round, and the leaderboard entry are all still there. That's the real proof for this deliverable.
 

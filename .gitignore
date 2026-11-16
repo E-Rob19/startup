@@ -3,3 +3,5 @@ dist/
 reactivity-explanations.md
 service-explanations.md
 service/public/
+db-explanations.md
+service/dbConfig.json
