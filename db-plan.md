@@ -83,9 +83,9 @@ There is one commit per step, about 15 in all, which covers the 12-commit goal. 
 - [x] Test (scripted, against `earshot-dev`, with the test user cleaned up afterward): register → log in → `/api/user/me` → **restart the server** → `/api/user/me` with the same cookie still works (it would have returned 401 before this step). The user doc holds a bcrypt hash, not the password. Also: the forged cookie and `{ $ne: null }` login both return 401, and logout removes the token from the doc. (21/21 checks passed.)
 
 ### Step 4: Unique usernames, enforced by the database
-- [ ] On connect, `createIndex({ userName: 1 }, { unique: true })` and `createIndex({ token: 1 })`.
-- [ ] If `insertOne` throws a duplicate key error (code `11000`), return 409. The "check first, then insert" code can't stop two sign-ups that arrive at the same moment, but the index can.
-- [ ] Test: duplicate sign-up still returns 409. Also fire two identical sign-ups at the same time and confirm only one account exists.
+- [x] On connect, `createIndex({ userName: 1 }, { unique: true })` and `createIndex({ token: 1 })`.
+- [x] If `insertOne` throws a duplicate key error (code `11000`), return 409. The "check first, then insert" code can't stop two sign-ups that arrive at the same moment, but the index can. (The check is kept for the normal case. The 11000 test is `DB.isDuplicateKeyError(err)`, so the Mongo-specific code stays in `database.js`.)
+- [x] Test: duplicate sign-up still returns 409. Also fire two identical sign-ups at the same time and confirm only one account exists. (**Before the fix:** 5 simultaneous sign-ups → three 200s and **3 accounts** with the same name. **After:** one 200, four 409s, 1 account.)
 
 ### Step 5: Save rounds to MongoDB
 - [ ] `database.js`: `addScore(entry)`.

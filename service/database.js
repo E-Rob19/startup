@@ -25,6 +25,20 @@ async function connect(dbName) {
   db = client.db(dbName);
   await db.command({ ping: 1 });
   userCollection = db.collection('user');
+
+  // createIndex does nothing if the index already exists, so it's safe to
+  // run on every startup.
+  // unique: Mongo itself rejects a second user with the same name, even if
+  // two sign-ups arrive at the same moment (see isDuplicateKeyError).
+  await userCollection.createIndex({ userName: 1 }, { unique: true });
+  // verifyAuth looks a user up by token on every restricted request.
+  await userCollection.createIndex({ token: 1 });
+}
+
+// True if an insert failed because a unique index already has that value.
+// 11000 is MongoDB's "duplicate key" error code.
+function isDuplicateKeyError(err) {
+  return err?.code === 11000;
 }
 
 // --- Users ---
@@ -56,6 +70,7 @@ function clearUserToken(userName) {
 
 module.exports = {
   connect,
+  isDuplicateKeyError,
   getUserByName,
   getUserByToken,
   addUser,

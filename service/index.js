@@ -67,11 +67,22 @@ apiRouter.post('/auth/create', async (req, res) => {
   if (!isNonEmptyString(userName) || !isNonEmptyString(password)) {
     return res.status(400).send({ msg: 'Username and password are required.' });
   }
+  // This check handles the normal case (and skips the slow bcrypt hash)...
   if (await findUser('userName', userName)) {
     return res.status(409).send({ msg: 'That username is already taken.' });
   }
 
-  const user = await createUser(userName, password);
+  // ...but two sign-ups at the same moment can both pass it. The unique index
+  // on userName catches the second one when it tries to insert.
+  let user;
+  try {
+    user = await createUser(userName, password);
+  } catch (err) {
+    if (DB.isDuplicateKeyError(err)) {
+      return res.status(409).send({ msg: 'That username is already taken.' });
+    }
+    throw err; // anything else is a real error → error handler (500)
+  }
   setAuthCookie(res, user.token);
   res.send({ userName: user.userName });
 });
