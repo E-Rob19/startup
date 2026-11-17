@@ -122,6 +122,31 @@ function getScoresByName(name) {
     .toArray();
 }
 
+const LEADERBOARD_SIZE = 10;
+
+// Each player's best round, highest score first, top LEADERBOARD_SIZE only.
+// An aggregation pipeline: each stage's output documents are the next
+// stage's input, and it all runs inside MongoDB.
+function getLeaderboard() {
+  return scoreCollection
+    .aggregate([
+      // 1. Best rounds first. On a tied score, the earlier round ranks higher.
+      { $sort: { score: -1, date: 1 } },
+      // 2. One group per player. Because of the sort, each group's first
+      //    document is that player's best round; keep the whole thing.
+      { $group: { _id: '$name', best: { $first: '$$ROOT' } } },
+      // 3. Unwrap { _id, best: {...round} } back into just the round.
+      { $replaceWith: '$best' },
+      // 4. Grouping doesn't keep any order, so sort the players again.
+      { $sort: { score: -1, date: 1 } },
+      // 5. Top 10 players.
+      { $limit: LEADERBOARD_SIZE },
+      // 6. The public leaderboard never sends _id or anyone's tones.
+      { $project: { _id: 0, tones: 0 } },
+    ])
+    .toArray();
+}
+
 module.exports = {
   connect,
   isDuplicateKeyError,
@@ -132,4 +157,5 @@ module.exports = {
   clearUserToken,
   addScore,
   getScoresByName,
+  getLeaderboard,
 };

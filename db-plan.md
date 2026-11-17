@@ -106,9 +106,10 @@ There is one commit per step, about 15 in all, which covers the 12-commit goal. 
 - [x] Test (scripted): 7 rounds, then **restart** → all 7 come back newest first, as ISO date strings, with no `_id`, `tones` on the newest 5 only, and no other player's rounds. 401 without login, `[]` for a new player. (11/11 passed.) *You:* check the Profile page in the browser.
 
 ### Step 8: Leaderboard with an aggregation pipeline
-- [ ] `database.js`: `getLeaderboard()` as a pipeline: sort by score → `$group` by name, keeping each player's best round → sort again → `$limit` 10 → `$project` out `_id` and `tones`.
-- [ ] `GET /api/scores` uses it. Delete the JS `getLeaderboard()` helper and the `scores` array.
-- [ ] Test: the Leaderboard shows one row per player, best score first, the same as before.
+- [x] `database.js`: `getLeaderboard()` as a pipeline: sort by score → `$group` by name, keeping each player's best round → sort again → `$limit` 10 → `$project` out `_id` and `tones`. (`$replaceWith` unwraps each group back into a plain round. Ties go to the earlier round, the same as the old code.)
+- [x] `GET /api/scores` uses it. Delete the JS `getLeaderboard()` helper and the `scores` array. (The temporary array push in `POST /api/score` is gone too, and `LEADERBOARD_SIZE` moved to `database.js`.)
+- [x] Test (scripted, in a throwaway `earshot-test` database that gets dropped afterward): 12 random players + ties + a best round with tones → 10 rows, one per player, no `_id`/`tones`, ties resolved by date, and **exactly the same result as the old JS algorithm** (5 runs with random data). Steps 5–7 tests still pass.
+- **Known gap until step 9:** `SEED_SCORES` is still in `index.js` but unused, so the leaderboard only shows real players for this one commit.
 
 ### Step 9: Seed players live in the database
 - [ ] Move `SEED_SCORES` into `database.js`. On connect, if the `score` collection is empty, `insertMany` them (with their dates converted to `Date`). After that they're ordinary data.

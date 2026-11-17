@@ -10,10 +10,11 @@ const app = express();
 
 const AUTH_COOKIE_NAME = 'token';
 const BCRYPT_SALT_ROUNDS = 10;
-const LEADERBOARD_SIZE = 10;
 
 // Fake players so the leaderboard isn't empty on a freshly started server.
 // (Moved here from the frontend's scoreService.js.)
+// NOT USED right now: step 9 moves these into database.js and inserts them
+// into MongoDB. Until then, the leaderboard shows only real players.
 const SEED_SCORES = [
   { name: 'frequencyfox', score: 912, accuracy: 0.95, avgTimeMs: 2800, date: '2026-09-18T19:42:00.000Z' },
   { name: 'mixmaster_jo', score: 874, accuracy: 0.92, avgTimeMs: 3400, date: '2026-09-17T15:10:00.000Z' },
@@ -36,11 +37,6 @@ const port = process.argv.length > 2 ? process.argv[2] : 4000;
 // The deployed service is started without it, so it uses the live 'earshot'
 // database; `npm run dev` passes 'earshot-dev' so local testing stays separate.
 const dbName = process.argv.length > 3 ? process.argv[3] : 'earshot';
-
-// Users are stored in MongoDB (see database.js).
-// Rounds are still in memory until they move to MongoDB in later steps.
-// Each round: { name, score, accuracy, avgTimeMs, date }
-const scores = [...SEED_SCORES];
 
 // Parse JSON request bodies into req.body.
 app.use(express.json());
@@ -132,8 +128,8 @@ apiRouter.get('/user/me', verifyAuth, (req, res) => {
 });
 
 // Public: the leaderboard, so guests can see it too.
-apiRouter.get('/scores', (_req, res) => {
-  res.send(getLeaderboard());
+apiRouter.get('/scores', async (_req, res) => {
+  res.send(await DB.getLeaderboard());
 });
 
 // Restricted: the logged-in player's own rounds. There's no ?name= parameter;
@@ -165,13 +161,8 @@ apiRouter.post('/score', verifyAuth, async (req, res) => {
     tones: tones.map(({ target, guess, timeMs }) => ({ target, guess, timeMs })),
   });
 
-  // TEMPORARY: the leaderboard still reads the in-memory array until it
-  // moves to MongoDB (step 8), so keep it updated too.
-  const response = { ...entry, date: date.toISOString() };
-  scores.push(response);
-
   // Same shape as before (no _id, no tones), so the Game page is unchanged.
-  res.send(response);
+  res.send({ ...entry, date: date.toISOString() });
 });
 
 // Unknown /api path: answer with a JSON 404. Without this, the request would
@@ -187,19 +178,6 @@ function isNonEmptyString(value) {
   return typeof value === 'string' && value.trim() !== '';
 }
 
-// Each player's best round, highest first, top LEADERBOARD_SIZE only.
-function getLeaderboard() {
-  const bestByPlayer = new Map();
-  for (const entry of scores) {
-    const best = bestByPlayer.get(entry.name);
-    if (!best || entry.score > best.score) {
-      bestByPlayer.set(entry.name, entry);
-    }
-  }
-  return [...bestByPlayer.values()]
-    .sort((a, b) => b.score - a.score)
-    .slice(0, LEADERBOARD_SIZE);
-}
 
 // findUser('userName', 'emma') or findUser('token', req.cookies.token)
 // Resolves to the user document, or null.
