@@ -36,6 +36,12 @@ async function connect(dbName) {
   // verifyAuth looks a user up by token on every restricted request.
   await userCollection.createIndex({ token: 1 });
 
+  // Score indexes match the sorts used below, field for field:
+  // getScoresByName and pruneOldTones: one player's rounds, newest first.
+  await scoreCollection.createIndex({ name: 1, date: -1, _id: -1 });
+  // getLeaderboard's first $sort: best score first, earlier round on ties.
+  await scoreCollection.createIndex({ score: -1, date: 1 });
+
   await seedScoresIfEmpty();
 }
 

@@ -117,8 +117,11 @@ There is one commit per step, about 15 in all, which covers the 12-commit goal. 
   - `earshot-dev` got seeded too, the first time a server started on it with an empty score collection. It now holds the 7 seed rounds and no users.
 
 ### Step 10: Indexes for the score queries
-- [ ] On connect: `{ name: 1, date: -1 }` (history) and `{ score: -1 }` (leaderboard).
-- [ ] Test: run `explain()` from a small scratch script (not committed) and see `IXSCAN` instead of `COLLSCAN`. (With this little data it's about learning, not speed.)
+- [x] On connect: ~~`{ name: 1, date: -1 }`~~ **`{ name: 1, date: -1, _id: -1 }`** (history + pruning) and ~~`{ score: -1 }`~~ **`{ score: -1, date: 1 }`** (leaderboard). (Changed so each index matches its query's full sort, tie-breakers included. Then Mongo never has to sort in memory.)
+- [x] Test: run `explain()` from a small scratch script (not committed) and see `IXSCAN` instead of `COLLSCAN`. (2,000 rounds in a throwaway database.)
+  - History and pruning: `COLLSCAN + SORT`, 2,000 docs examined → `IXSCAN`, **40** docs examined (just that player's rounds), no sort.
+  - Leaderboard: `COLLSCAN + SORT` → `IXSCAN`, with no in-memory sort, but still 2,000 docs examined. It has to see every round to find each player's best. Fixing that would need a separate "best per player" collection, which isn't worth it at this size.
+  - All earlier step tests still pass.
 
 ### Step 11: When the database goes away
 - [ ] Close the client on `SIGINT` / `SIGTERM` so `pm2 restart` and Ctrl+C shut down cleanly.
