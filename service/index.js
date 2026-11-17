@@ -138,11 +138,9 @@ apiRouter.get('/scores', (_req, res) => {
 
 // Restricted: the logged-in player's own rounds. There's no ?name= parameter;
 // "mine" always means req.user, so nobody can ask for someone else's history.
-apiRouter.get('/scores/mine', verifyAuth, (req, res) => {
-  const history = scores
-    .filter((entry) => entry.name === req.user.userName)
-    .sort((a, b) => b.date.localeCompare(a.date));
-  res.send(history);
+// Newest first; the newest few rounds also include their `tones`.
+apiRouter.get('/scores/mine', verifyAuth, async (req, res) => {
+  res.send(await DB.getScoresByName(req.user.userName));
 });
 
 // Restricted: save a finished round. The client sends what happened on each
@@ -167,8 +165,8 @@ apiRouter.post('/score', verifyAuth, async (req, res) => {
     tones: tones.map(({ target, guess, timeMs }) => ({ target, guess, timeMs })),
   });
 
-  // TEMPORARY: the leaderboard and history still read the in-memory array
-  // until they move to MongoDB (steps 7 and 8), so keep it updated too.
+  // TEMPORARY: the leaderboard still reads the in-memory array until it
+  // moves to MongoDB (step 8), so keep it updated too.
   const response = { ...entry, date: date.toISOString() };
   scores.push(response);
 

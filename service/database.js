@@ -114,6 +114,14 @@ async function pruneOldTones(name) {
   }
 }
 
+// One player's rounds, newest first. `tones` is included on the rounds that
+// still have it (the newest TONE_HISTORY_SIZE), for the Profile breakdown.
+function getScoresByName(name) {
+  return scoreCollection
+    .find({ name }, { sort: { date: -1, _id: -1 }, projection: { _id: 0 } })
+    .toArray();
+}
+
 module.exports = {
   connect,
   isDuplicateKeyError,
@@ -123,4 +131,5 @@ module.exports = {
   setUserToken,
   clearUserToken,
   addScore,
+  getScoresByName,
 };

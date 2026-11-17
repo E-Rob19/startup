@@ -101,9 +101,9 @@ There is one commit per step, about 15 in all, which covers the 12-commit goal. 
 - [x] Test (scripted): 7 rounds for one player → the newest 5 (rounds 3–7) keep `tones`, rounds 1–2 lost them, and all 7 still have their score. A second player's rounds weren't touched. (5/5 passed, and the step 5 tests still pass.)
 
 ### Step 7: Round history from MongoDB
-- [ ] `database.js`: `getScoresByName(name)`: `find({ name })`, sorted by `date` descending, with a projection that leaves out `_id`. `tones` is included where it still exists, for the Profile breakdown.
-- [ ] `GET /api/scores/mine` uses it.
-- [ ] Test: the Profile page shows your rounds, and they're still there after a server restart.
+- [x] `database.js`: `getScoresByName(name)`: `find({ name })`, sorted by `date` descending, with a projection that leaves out `_id`. `tones` is included where it still exists, for the Profile breakdown. (Sorted by `{ date: -1, _id: -1 }`, the same tie-breaker as step 6.)
+- [x] `GET /api/scores/mine` uses it. (No frontend change: the Profile reads only `score` and `date`, and ignores the extra `tones`.)
+- [x] Test (scripted): 7 rounds, then **restart** → all 7 come back newest first, as ISO date strings, with no `_id`, `tones` on the newest 5 only, and no other player's rounds. 401 without login, `[]` for a new player. (11/11 passed.) *You:* check the Profile page in the browser.
 
 ### Step 8: Leaderboard with an aggregation pipeline
 - [ ] `database.js`: `getLeaderboard()` as a pipeline: sort by score → `$group` by name, keeping each player's best round → sort again → `$limit` 10 → `$project` out `_id` and `tones`.
