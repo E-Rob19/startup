@@ -88,9 +88,11 @@ There is one commit per step, about 15 in all, which covers the 12-commit goal. 
 - [x] Test: duplicate sign-up still returns 409. Also fire two identical sign-ups at the same time and confirm only one account exists. (**Before the fix:** 5 simultaneous sign-ups → three 200s and **3 accounts** with the same name. **After:** one 200, four 409s, 1 account.)
 
 ### Step 5: Save rounds to MongoDB
-- [ ] `database.js`: `addScore(entry)`.
-- [ ] `POST /api/score` saves `{ name, score, accuracy, avgTimeMs, date: new Date(), tones }`, then responds with the same fields as today (no `_id`, no `tones`), so `game.jsx` keeps working.
-- [ ] Test: play a round in the browser, then find the doc in Atlas with all 10 tones.
+- [x] `database.js`: `addScore(entry)`.
+- [x] `POST /api/score` saves `{ name, score, accuracy, avgTimeMs, date: new Date(), tones }`, then responds with the same fields as today (no `_id`, no `tones`), so `game.jsx` keeps working.
+  - Each tone is rebuilt as `{ target, guess, timeMs }` before saving. `isValidRound` checks those three fields but allows extra ones, so without this, junk sent in the request would be stored too.
+  - **Temporary:** the round is also pushed to the in-memory `scores` array, so the Leaderboard and Profile keep showing new rounds until steps 7 and 8 move them to MongoDB. That way the app works at every commit.
+- [x] Test (scripted): a valid round is saved with a real `Date` and exactly 10 tones of 3 fields each. `score`/`name` sent in the body are ignored. 401 without login, 400 for a bad round, and nothing saved from either. (18/18 passed.) *You:* play a round in the browser and find it in Atlas.
 
 ### Step 6: Only keep tones for the newest 5 rounds
 - [ ] `database.js`: `pruneOldTones(name)`. Find that player's rounds that still have `tones`, newest first, skip the first `TONE_HISTORY_SIZE` (5), and `updateMany` with `$unset: { tones: '' }` on the rest. `addScore` calls it right after inserting.

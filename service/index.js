@@ -149,22 +149,31 @@ apiRouter.get('/scores/mine', verifyAuth, (req, res) => {
 // tone ({ tones: [{ target, guess, timeMs }, ...] }) and the server computes
 // the score itself, so posting a made-up score doesn't work. The name and date
 // are set here too, so a player can only post rounds as themselves.
-apiRouter.post('/score', verifyAuth, (req, res) => {
+apiRouter.post('/score', verifyAuth, async (req, res) => {
   const { tones } = req.body ?? {};
   if (!isValidRound(tones)) {
     return res.status(400).send({ msg: 'Invalid round.' });
   }
 
   const { score, accuracy, avgTimeMs } = scoreRound(tones);
-  const entry = {
-    name: req.user.userName,
-    score,
-    accuracy,
-    avgTimeMs,
-    date: new Date().toISOString(),
-  };
-  scores.push(entry);
-  res.send(entry);
+  const date = new Date();
+  const entry = { name: req.user.userName, score, accuracy, avgTimeMs };
+
+  // Saved to MongoDB with the per-tone results. Each tone is rebuilt with only
+  // the three known fields, so extra junk sent in the request isn't stored.
+  await DB.addScore({
+    ...entry,
+    date,
+    tones: tones.map(({ target, guess, timeMs }) => ({ target, guess, timeMs })),
+  });
+
+  // TEMPORARY: the leaderboard and history still read the in-memory array
+  // until they move to MongoDB (steps 7 and 8), so keep it updated too.
+  const response = { ...entry, date: date.toISOString() };
+  scores.push(response);
+
+  // Same shape as before (no _id, no tones), so the Game page is unchanged.
+  res.send(response);
 });
 
 // Unknown /api path: answer with a JSON 404. Without this, the request would

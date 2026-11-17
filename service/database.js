@@ -18,6 +18,7 @@ const client = new MongoClient(url, { serverSelectionTimeoutMS: 5000 });
 
 let db; // set by connect()
 let userCollection; // { userName, passwordHash, token }
+let scoreCollection; // { name, score, accuracy, avgTimeMs, date, tones }
 
 // Picks the database (e.g. 'earshot' or 'earshot-dev') and checks that the
 // server is reachable and the login works. Rejects if it isn't.
@@ -25,6 +26,7 @@ async function connect(dbName) {
   db = client.db(dbName);
   await db.command({ ping: 1 });
   userCollection = db.collection('user');
+  scoreCollection = db.collection('score');
 
   // createIndex does nothing if the index already exists, so it's safe to
   // run on every startup.
@@ -68,6 +70,14 @@ function clearUserToken(userName) {
   return userCollection.updateOne({ userName }, { $unset: { token: '' } });
 }
 
+// --- Scores ---
+
+// Saves one finished round. `date` should be a real Date object (not a
+// string) so Mongo stores it as a date and can sort by it.
+function addScore(score) {
+  return scoreCollection.insertOne(score);
+}
+
 module.exports = {
   connect,
   isDuplicateKeyError,
@@ -76,4 +86,5 @@ module.exports = {
   addUser,
   setUserToken,
   clearUserToken,
+  addScore,
 };
