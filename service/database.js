@@ -72,10 +72,46 @@ function clearUserToken(userName) {
 
 // --- Scores ---
 
-// Saves one finished round. `date` should be a real Date object (not a
-// string) so Mongo stores it as a date and can sort by it.
-function addScore(score) {
-  return scoreCollection.insertOne(score);
+// Only each player's newest few rounds keep their per-tone results. Older
+// rounds keep their score, accuracy, time, and date forever, but lose `tones`
+// so the database doesn't keep growing by 10 tones per round.
+const TONE_HISTORY_SIZE = 5;
+
+// Saves one finished round, then trims that player's older tone details.
+// `date` should be a real Date object (not a string) so Mongo stores it as a
+// date and can sort by it.
+async function addScore(score) {
+  await scoreCollection.insertOne(score);
+
+  // The round is already saved at this point, so a failure here shouldn't
+  // turn into an error for the player. Log it; the next save tries again.
+  try {
+    await pruneOldTones(score.name);
+  } catch (err) {
+    console.error(`Couldn't prune old tones for ${score.name}:`, err);
+  }
+}
+
+// Removes `tones` from every round of this player's except the newest
+// TONE_HISTORY_SIZE that still have them.
+async function pruneOldTones(name) {
+  const older = await scoreCollection
+    .find(
+      { name, tones: { $exists: true } },
+      {
+        sort: { date: -1, _id: -1 }, // newest first (_id breaks exact-time ties)
+        skip: TONE_HISTORY_SIZE, // keep the newest ones
+        projection: { _id: 1 }, // only need their ids
+      }
+    )
+    .toArray();
+
+  if (older.length > 0) {
+    await scoreCollection.updateMany(
+      { _id: { $in: older.map((doc) => doc._id) } },
+      { $unset: { tones: '' } }
+    );
+  }
 }
 
 module.exports = {

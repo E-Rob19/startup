@@ -95,8 +95,10 @@ There is one commit per step, about 15 in all, which covers the 12-commit goal. 
 - [x] Test (scripted): a valid round is saved with a real `Date` and exactly 10 tones of 3 fields each. `score`/`name` sent in the body are ignored. 401 without login, 400 for a bad round, and nothing saved from either. (18/18 passed.) *You:* play a round in the browser and find it in Atlas.
 
 ### Step 6: Only keep tones for the newest 5 rounds
-- [ ] `database.js`: `pruneOldTones(name)`. Find that player's rounds that still have `tones`, newest first, skip the first `TONE_HISTORY_SIZE` (5), and `updateMany` with `$unset: { tones: '' }` on the rest. `addScore` calls it right after inserting.
-- [ ] Test: play 6+ rounds (or post 6 rounds with `curl`). In Atlas, only the newest 5 docs still have `tones`, and **every** round still has its score.
+- [x] `database.js`: `pruneOldTones(name)`. Find that player's rounds that still have `tones`, newest first, skip the first `TONE_HISTORY_SIZE` (5), and `updateMany` with `$unset: { tones: '' }` on the rest. `addScore` calls it right after inserting.
+  - If pruning fails, it's logged and **not** sent to the player as an error, because their round is already saved. The next save tries again.
+  - The sort is `{ date: -1, _id: -1 }`, so two rounds saved in the same millisecond still have a fixed order.
+- [x] Test (scripted): 7 rounds for one player → the newest 5 (rounds 3–7) keep `tones`, rounds 1–2 lost them, and all 7 still have their score. A second player's rounds weren't touched. (5/5 passed, and the step 5 tests still pass.)
 
 ### Step 7: Round history from MongoDB
 - [ ] `database.js`: `getScoresByName(name)`: `find({ name })`, sorted by `date` descending, with a projection that leaves out `_id`. `tones` is included where it still exists, for the Profile breakdown.
