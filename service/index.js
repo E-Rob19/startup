@@ -11,20 +11,6 @@ const app = express();
 const AUTH_COOKIE_NAME = 'token';
 const BCRYPT_SALT_ROUNDS = 10;
 
-// Fake players so the leaderboard isn't empty on a freshly started server.
-// (Moved here from the frontend's scoreService.js.)
-// NOT USED right now: step 9 moves these into database.js and inserts them
-// into MongoDB. Until then, the leaderboard shows only real players.
-const SEED_SCORES = [
-  { name: 'frequencyfox', score: 912, accuracy: 0.95, avgTimeMs: 2800, date: '2026-09-18T19:42:00.000Z' },
-  { name: 'mixmaster_jo', score: 874, accuracy: 0.92, avgTimeMs: 3400, date: '2026-09-17T15:10:00.000Z' },
-  { name: 'ringout_ray', score: 851, accuracy: 0.91, avgTimeMs: 4100, date: '2026-09-15T22:05:00.000Z' },
-  { name: 'gainstager', score: 803, accuracy: 0.87, avgTimeMs: 4600, date: '2026-09-14T17:30:00.000Z' },
-  { name: 'sub_woofer', score: 768, accuracy: 0.85, avgTimeMs: 5200, date: '2026-09-12T20:48:00.000Z' },
-  { name: 'feedback_fiona', score: 730, accuracy: 0.82, avgTimeMs: 5900, date: '2026-09-10T13:15:00.000Z' },
-  { name: 'monitor_mo', score: 689, accuracy: 0.79, avgTimeMs: 6300, date: '2026-09-08T18:22:00.000Z' },
-];
-
 // The built React app (Vite's dist/ output) is copied here when deploying.
 // Using __dirname makes the path work no matter which folder node is started from.
 const publicDir = path.join(__dirname, 'public');

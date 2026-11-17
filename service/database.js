@@ -35,6 +35,33 @@ async function connect(dbName) {
   await userCollection.createIndex({ userName: 1 }, { unique: true });
   // verifyAuth looks a user up by token on every restricted request.
   await userCollection.createIndex({ token: 1 });
+
+  await seedScoresIfEmpty();
+}
+
+// Fake players so a brand-new database doesn't start with an empty
+// leaderboard. (Originally in the frontend's scoreService.js, then in
+// index.js's in-memory array.)
+const SEED_SCORES = [
+  { name: 'frequencyfox', score: 912, accuracy: 0.95, avgTimeMs: 2800, date: '2026-09-18T19:42:00.000Z' },
+  { name: 'mixmaster_jo', score: 874, accuracy: 0.92, avgTimeMs: 3400, date: '2026-09-17T15:10:00.000Z' },
+  { name: 'ringout_ray', score: 851, accuracy: 0.91, avgTimeMs: 4100, date: '2026-09-15T22:05:00.000Z' },
+  { name: 'gainstager', score: 803, accuracy: 0.87, avgTimeMs: 4600, date: '2026-09-14T17:30:00.000Z' },
+  { name: 'sub_woofer', score: 768, accuracy: 0.85, avgTimeMs: 5200, date: '2026-09-12T20:48:00.000Z' },
+  { name: 'feedback_fiona', score: 730, accuracy: 0.82, avgTimeMs: 5900, date: '2026-09-10T13:15:00.000Z' },
+  { name: 'monitor_mo', score: 689, accuracy: 0.79, avgTimeMs: 6300, date: '2026-09-08T18:22:00.000Z' },
+];
+
+// Inserts the seed players only into an empty score collection, so they're
+// added once per database (on its first startup) and then are just ordinary
+// rounds. Restarting never duplicates them.
+async function seedScoresIfEmpty() {
+  const hasScores = (await scoreCollection.countDocuments({}, { limit: 1 })) > 0;
+  if (hasScores) return;
+
+  // Stored as real Dates, like every other round (see addScore).
+  await scoreCollection.insertMany(SEED_SCORES.map((seed) => ({ ...seed, date: new Date(seed.date) })));
+  console.log(`Seeded ${SEED_SCORES.length} sample players into an empty score collection`);
 }
 
 // True if an insert failed because a unique index already has that value.

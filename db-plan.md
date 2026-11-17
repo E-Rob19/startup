@@ -109,11 +109,12 @@ There is one commit per step, about 15 in all, which covers the 12-commit goal. 
 - [x] `database.js`: `getLeaderboard()` as a pipeline: sort by score → `$group` by name, keeping each player's best round → sort again → `$limit` 10 → `$project` out `_id` and `tones`. (`$replaceWith` unwraps each group back into a plain round. Ties go to the earlier round, the same as the old code.)
 - [x] `GET /api/scores` uses it. Delete the JS `getLeaderboard()` helper and the `scores` array. (The temporary array push in `POST /api/score` is gone too, and `LEADERBOARD_SIZE` moved to `database.js`.)
 - [x] Test (scripted, in a throwaway `earshot-test` database that gets dropped afterward): 12 random players + ties + a best round with tones → 10 rows, one per player, no `_id`/`tones`, ties resolved by date, and **exactly the same result as the old JS algorithm** (5 runs with random data). Steps 5–7 tests still pass.
-- **Known gap until step 9:** `SEED_SCORES` is still in `index.js` but unused, so the leaderboard only shows real players for this one commit.
+- **Known gap until step 9:** `SEED_SCORES` is still in `index.js` but unused, so the leaderboard only shows real players for this one commit. (Fixed in step 9.)
 
 ### Step 9: Seed players live in the database
-- [ ] Move `SEED_SCORES` into `database.js`. On connect, if the `score` collection is empty, `insertMany` them (with their dates converted to `Date`). After that they're ordinary data.
-- [ ] Test: drop the collection in Atlas, restart, and the seven players come back. Restart again and they **aren't** duplicated.
+- [x] Move `SEED_SCORES` into `database.js`. On connect, if the `score` collection is empty, `insertMany` them (with their dates converted to `Date`). After that they're ordinary data. (`seedScoresIfEmpty()`, using `countDocuments({}, { limit: 1 })`, logs "Seeded 7 sample players…" when it runs.)
+- [x] Test (scripted, in a throwaway `earshot-test` database): a new database is seeded, and the leaderboard shows the 7 in order. A restart doesn't duplicate them. An emptied collection gets re-seeded. A collection with only real rounds is **not** seeded. (9/9 passed, and all earlier tests still pass.)
+  - `earshot-dev` got seeded too, the first time a server started on it with an empty score collection. It now holds the 7 seed rounds and no users.
 
 ### Step 10: Indexes for the score queries
 - [ ] On connect: `{ name: 1, date: -1 }` (history) and `{ score: -1 }` (leaderboard).
