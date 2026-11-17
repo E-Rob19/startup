@@ -209,6 +209,15 @@ app.use((_req, res) => {
 // Client mistakes like malformed JSON already carry a 4xx status; anything
 // else is our bug, so log it but don't send its details to the browser.
 app.use((err, _req, res, _next) => {
+  // Atlas unreachable (or the client closed) isn't a bug in our code, so it
+  // gets a short log line and 503 Service Unavailable instead of a 500.
+  // A 503 (not 401) also means the frontend won't log the player out just
+  // because the database blinked during verifyAuth.
+  if (DB.isDatabaseUnavailable(err)) {
+    console.error(`Database unavailable: ${err.name}: ${err.message}`);
+    return res.status(503).send({ msg: 'The database is unavailable right now. Please try again in a moment.' });
+  }
+
   const status = err.status >= 400 && err.status < 500 ? err.status : 500;
   if (status === 500) {
     console.error(err);
@@ -219,10 +228,11 @@ app.use((err, _req, res, _next) => {
 // Connect to MongoDB first, and only start accepting requests once that works.
 // If it fails, there's no point running: every endpoint needs the database.
 // Only the error message is logged, never the connection URL (it contains the password).
+let httpServer;
 DB.connect(dbName)
   .then(() => {
     console.log(`Connected to MongoDB (${dbName})`);
-    app.listen(port, () => {
+    httpServer = app.listen(port, () => {
       console.log(`EarShot service listening on port ${port}`);
     });
   })
@@ -230,3 +240,37 @@ DB.connect(dbName)
     console.error(`Unable to connect to MongoDB (${dbName}): ${err.message}`);
     process.exit(1);
   });
+
+// Clean shutdown. pm2 sends SIGINT on `pm2 restart`/`pm2 stop` (and Ctrl+C
+// does too); SIGTERM is the other standard "please stop" signal. Without
+// these, Node just dies mid-request with MongoDB connections left open.
+const SHUTDOWN_TIMEOUT_MS = 1000; // pm2 force-kills after 1.6 s by default
+
+async function shutdown(signal) {
+  console.log(`${signal} received, shutting down...`);
+
+  // If a connection refuses to finish, give up rather than hang.
+  setTimeout(() => {
+    console.error('Shutdown took too long; exiting anyway.');
+    process.exit(1);
+  }, SHUTDOWN_TIMEOUT_MS).unref(); // unref: this timer alone doesn't keep Node running
+
+  // Stop accepting new requests, and wait for the ones in progress to finish...
+  if (httpServer) {
+    const closed = new Promise((resolve) => httpServer.close(resolve));
+    // close() waits for every connection to end, but browsers keep a
+    // connection open after a request finishes ("keep-alive") to reuse it.
+    // Close connections as soon as they're idle so close() can finish.
+    httpServer.closeIdleConnections();
+    const idleCloser = setInterval(() => httpServer.closeIdleConnections(), 50);
+    await closed;
+    clearInterval(idleCloser);
+  }
+  // ...then close the MongoDB connection pool.
+  await DB.close();
+  console.log('HTTP server and MongoDB connection closed.');
+  process.exit(0);
+}
+
+process.once('SIGINT', () => shutdown('SIGINT'));
+process.once('SIGTERM', () => shutdown('SIGTERM'));

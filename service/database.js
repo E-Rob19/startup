@@ -1,7 +1,13 @@
 // All MongoDB access lives in this file. index.js never talks to Mongo directly;
 // it calls the functions exported here.
 
-const { MongoClient } = require('mongodb');
+const {
+  MongoClient,
+  MongoNetworkError,
+  MongoServerSelectionError,
+  MongoNotConnectedError,
+  MongoTopologyClosedError,
+} = require('mongodb');
 const config = require('./dbConfig.json'); // never committed (see .gitignore)
 
 // encodeURIComponent keeps characters like @ : / in the username or password
@@ -70,10 +76,31 @@ async function seedScoresIfEmpty() {
   console.log(`Seeded ${SEED_SCORES.length} sample players into an empty score collection`);
 }
 
+// Closes the connection pool (used when the server shuts down).
+function close() {
+  return client.close();
+}
+
 // True if an insert failed because a unique index already has that value.
 // 11000 is MongoDB's "duplicate key" error code.
 function isDuplicateKeyError(err) {
   return err?.code === 11000;
+}
+
+// True if an error means "can't reach the database right now", as opposed to
+// a bug in a query:
+// - MongoServerSelectionError: no server answered within serverSelectionTimeoutMS
+//   (Atlas down, network down, IP not allowed)
+// - MongoNetworkError: a connection dropped or timed out mid-operation
+// - MongoNotConnectedError / MongoTopologyClosedError: the client was closed
+//   (e.g. a request still running while the server shuts down)
+function isDatabaseUnavailable(err) {
+  return (
+    err instanceof MongoServerSelectionError ||
+    err instanceof MongoNetworkError ||
+    err instanceof MongoNotConnectedError ||
+    err instanceof MongoTopologyClosedError
+  );
 }
 
 // --- Users ---
@@ -182,7 +209,9 @@ function getLeaderboard() {
 
 module.exports = {
   connect,
+  close,
   isDuplicateKeyError,
+  isDatabaseUnavailable,
   getUserByName,
   getUserByToken,
   addUser,

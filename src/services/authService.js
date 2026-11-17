@@ -36,7 +36,8 @@ async function sendAuthRequest(method, path, body) {
   }
 
   // 502/503/504: the proxy in front of our service (Caddy, or Vite in
-  // development) is up, but the service behind it isn't.
+  // development) is up, but the service behind it isn't. The service also
+  // sends 503 itself when it can't reach the database.
   if ([502, 503, 504].includes(response.status)) {
     throw new Error("Can't reach the server. Please try again in a moment.");
   }

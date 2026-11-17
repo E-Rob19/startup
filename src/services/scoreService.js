@@ -14,6 +14,7 @@ const UNREACHABLE_MESSAGE = "Can't reach the server. Please try again in a momen
 
 // 502/503/504 come from whatever sits in front of our service (Caddy in
 // production, Vite's proxy in development) when the service itself is down.
+// The service also sends 503 itself when it can't reach the database.
 const GATEWAY_ERRORS = [502, 503, 504];
 
 async function sendScoreRequest(method, path, body) {

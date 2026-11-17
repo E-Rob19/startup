@@ -124,9 +124,16 @@ There is one commit per step, about 15 in all, which covers the 12-commit goal. 
   - All earlier step tests still pass.
 
 ### Step 11: When the database goes away
-- [ ] Close the client on `SIGINT` / `SIGTERM` so `pm2 restart` and Ctrl+C shut down cleanly.
-- [ ] A DB error during a request already reaches the Express 5 error handler (500). Make sure the log says it was a database error, and that the browser sees the usual friendly message, not Mongo's error text.
-- [ ] Test: start the server, cut the network (or block Atlas), and hit `/api/scores` → JSON 500 with a friendly message, and the Leaderboard shows its error state.
+- [x] Close the client on `SIGINT` / `SIGTERM` so `pm2 restart` and Ctrl+C shut down cleanly. (It stops accepting requests, lets in-progress ones finish, then closes the MongoDB pool and exits 0. A 1-second safety timer exits anyway if something hangs.)
+  - **Bug found by the test and fixed:** `httpServer.close()` hung, because the finished request's keep-alive connection stayed open. Now `closeIdleConnections()` runs while shutting down.
+- [x] A DB error during a request already reaches the Express 5 error handler (500). Make sure the log says it was a database error, and that the browser sees the usual friendly message, not Mongo's error text.
+  - **Changed:** "can't reach the database" errors (`MongoServerSelectionError`, `MongoNetworkError`, `MongoNotConnectedError`, `MongoTopologyClosedError`, checked by `DB.isDatabaseUnavailable`) now return **503** instead of 500, with a one-line log `Database unavailable: <name>: <message>`. Other errors still return 500.
+  - Bonus: `verifyAuth` failing that way returns 503, not 401, so the frontend doesn't log the player out just because Atlas blinked.
+  - Frontend: no code change. It already shows "Can't reach the server…" for 503. Updated two comments in `authService.js` / `scoreService.js` that said 503 only comes from the proxy.
+- [x] Test (in-process wrapper, throwaway `earshot-test` database, since Windows can't send a real SIGINT to another process):
+  - **Outage** (`DB.close()` under a running server): `/scores`, `/scores/mine`, `/user/me`, and login → 503 + friendly JSON. `/api/health` → still 200.
+  - **Shutdown:** SIGINT during a sign-up → the sign-up still finishes (200), new requests are refused, both closed, exit code 0.
+  - *You (optional):* turn off Wi-Fi with `npm run dev` running and open the Leaderboard. After ~5 s you get "Can't reach the server", and the terminal shows `MongoServerSelectionError`.
 
 ### Step 12: Per-tone breakdown on the Profile
 - [ ] In the Profile's history table, each round that still has `tones` gets an arrow toggle button (▸ / ▾) that shows or hides a row underneath with its 10 tones: target, your guess, how far off, and time. Older rounds have no toggle, just their score.
