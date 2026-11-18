@@ -19,10 +19,12 @@ const publicDir = path.join(__dirname, 'public');
 // 4000 is the startup's port by course convention (Simon uses 3000).
 const port = process.argv.length > 2 ? process.argv[2] : 4000;
 
-// The database name can be passed next (`node index.js 4000 earshot-dev`).
-// The deployed service is started without it, so it uses the live 'earshot'
-// database; `npm run dev` passes 'earshot-dev' so local testing stays separate.
-const dbName = process.argv.length > 3 ? process.argv[3] : 'earshot';
+// The live site uses the 'earshot' database. `npm run dev` adds --dev
+// (`node index.js 4000 --dev`) to use 'earshot-dev', so local testing stays
+// separate. It's an explicit flag rather than "whatever the next argument is"
+// because the server's pm2 setup passes its own extra argument (the service
+// name, 'startup'), which once quietly became the live database's name.
+const dbName = process.argv.includes('--dev') ? 'earshot-dev' : 'earshot';
 
 // Parse JSON request bodies into req.body.
 app.use(express.json());

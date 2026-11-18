@@ -154,10 +154,12 @@ You asked for a marker for noisy tones and for tones where time ran out. The Gam
 - [x] **12b-2:** styling. Little badges for the markers (noise / time's up) instead of plain words, a styled toggle button, a distinct background for the open breakdown, keep the history rows' stripes from shifting when a breakdown opens, and a tighter inner table on phones.
 
 ### Step 13: Deploy
-- [ ] In Atlas **Network Access**, check that the EC2 server's IP is allowed (Simon's setup may already allow it).
-- [ ] Check `node -v` on the server is 20.19 or newer (the `mongodb` 7 driver requires it).
-- [ ] Deploy (you, by hand): `./deployService.sh -k <key> -h earshot.click -s startup`.
-- [ ] Test on the live site: create an account, play a round, then redeploy (or `pm2 restart startup`) and confirm the account, the round, and the leaderboard entry are all still there. That's the real proof for this deliverable.
+- [x] In Atlas **Network Access**, check that the EC2 server's IP is allowed (Simon's setup may already allow it). *(It was: the first deploy connected fine.)*
+- [x] Check `node -v` on the server is 20.19 or newer (the `mongodb` 7 driver requires it). *(It is: the driver loaded and ran.)*
+- [x] Deploy (you, by hand): `./deployService.sh -k <key> -h earshot.click -s startup`.
+- **Found on the first deploy:** the live server saved to a database named **`startup`**, not `earshot`. The server's pm2 setup starts it with an extra argument (the service name), and step 2's code took the 3rd argument as the database name. Account `panda` and its round were stored correctly, just in the wrong database. **Fix:** the database is now picked by an explicit flag, `process.argv.includes('--dev') ? 'earshot-dev' : 'earshot'`, and `npm run dev` runs `node index.js 4000 --dev`. Also deleted a stray `emma` test account + round from `earshot` (made by a local run without the dev argument). The orphaned `startup` database is left alone for now.
+- [ ] Redeploy with the fix, then re-check: the live leaderboard should show only the 7 sample players until you play, and new accounts should land in `earshot`.
+- [ ] Test on the live site (https://startup.earshot.click): create an account, play a round, then redeploy (or `pm2 restart startup`) and confirm the account, the round, and the leaderboard entry are all still there. That's the real proof for this deliverable.
 
 ### Step 14: Write-up
 - [ ] Final explanations update (wrap-up section with the rubric mapping and a summary of plan changes).
@@ -168,7 +170,7 @@ You asked for a marker for noisy tones and for tones where time ran out. The Gam
 ## Decisions (confirmed)
 
 1. **Atlas cluster:** reuse Simon's cluster and DB user, with a new database. No new Atlas setup.
-2. **Dev vs prod data:** the live site uses `earshot`, and local runs use `earshot-dev` (chosen by a command-line argument, see step 2), so test accounts never show up on the live leaderboard.
+2. **Dev vs prod data:** the live site uses `earshot`, and local runs use `earshot-dev` (chosen by the `--dev` flag in `npm run dev`; see step 13 for why it's a flag), so test accounts never show up on the live leaderboard.
 3. **Per-tone results:** stored for each player's **5 most recent rounds** only, so the database doesn't grow without limit (step 6). The score record for every round is kept. The Profile shows them behind a show/hide arrow per round (step 12).
 4. **Usernames stay case-sensitive** (`Emma` and `emma` are different accounts), the same as now.
 5. **Explanations** go in `explanations/db-explanations.md`. The whole `explanations/` folder (all stages) is gitignored.
