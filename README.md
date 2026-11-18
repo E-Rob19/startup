@@ -156,9 +156,20 @@ For this deliverable I did the following. I checked the box `[x]` and added a de
 
 For this deliverable I did the following. I checked the box `[x]` and added a description for things I completed.
 
-- [ ] I completed the prerequisites for this deliverable (Simon deployed, GitHub link, Git commits)
-- [ ] **Stores data in MongoDB** - I did not complete this part of the deliverable.
-- [ ] **Stores credentials in MongoDB** - I did not complete this part of the deliverable.
+- [x] I completed the prerequisites for this deliverable (Simon deployed, GitHub link, Git commits)
+- [x] **Stores data in MongoDB** - Every saved round is stored in MongoDB Atlas, so accounts, scores, and the leaderboard now survive restarts and redeploys. All database code lives in `service/database.js`. The endpoints in `service/index.js` call it instead of using in-memory arrays.
+  - **Connection** - Uses the official `mongodb` driver. The Atlas hostname, user, and password are read from `service/dbConfig.json`, which is gitignored and copied to the server by the deploy script. The server pings the database before it starts listening, and exits with a readable error if it can't connect.
+  - **Separate live and dev data** - The live site uses the `earshot` database. `npm run dev` (`node index.js 4000 --dev`) uses `earshot-dev`, so test accounts never show up on the live leaderboard.
+  - **Rounds** - Each round is a document in the `score` collection with the player's name, the score, accuracy, and average time (all computed by the server), and a real `Date`. To keep the database from growing forever, only each player's **5 most recent rounds** keep their per-tone details (target, guess, time, and whether the tone had pink noise or ran out of time). Older rounds keep their score but have the details removed.
+  - **Leaderboard** - `GET /api/scores` uses an aggregation pipeline to find each player's best round and return the top 10. Seven sample players are added the first time the server starts with an empty score collection, so a new database isn't blank.
+  - **Profile** - `GET /api/scores/mine` returns your rounds newest first. Each of your 5 most recent rounds has a ▸ button that opens its tone-by-tone breakdown, with little badges marking the noisy tones and the ones where time ran out.
+  - **Indexes** - Compound indexes on `{ name, date }` (history) and `{ score, date }` (leaderboard) mean these queries don't scan the whole collection.
+  - **Errors** - If the database becomes unreachable while the server is running, requests get a 503 with a friendly message instead of hanging or crashing. The server also closes its database connection cleanly when it shuts down.
+- [x] **Stores credentials in MongoDB** - Accounts are documents in the `user` collection: `{ userName, passwordHash, token }`.
+  - **Only the bcrypt hash is stored**, never the password.
+  - **The session token is stored in the user's document**, so logins survive a server restart (before this deliverable, a restart logged everyone out). Logging out removes the token from the database.
+  - **A unique index on `userName`** makes the database reject duplicate accounts (it's returned as a 409), even if two people sign up with the same name at the same moment.
+  - **Lookups only accept plain strings**, so a crafted cookie or request can't sneak in a MongoDB query operator like `{ "$ne": null }`.
 
 ## 🚀 WebSocket deliverable
 
