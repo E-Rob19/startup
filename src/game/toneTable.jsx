@@ -26,11 +26,13 @@ export function ToneTable({ tones }) {
           {tones.map((t, i) => (
             <tr key={i}>
               <td>{i + 1}</td>
-              <td>{toneType(t.withNoise)}</td>
+              <td><ToneType withNoise={t.withNoise} /></td>
               <td>{t.target} Hz</td>
               <td>{t.guess} Hz</td>
               <td>{formatPercent(toneAccuracy(t.guess, t.target))}</td>
-              <td>{t.timedOut ? "Time's up" : formatSeconds(t.timeMs)}</td>
+              <td>
+                {t.timedOut ? <span className="tone-badge tone-badge-timeout">Time's up</span> : formatSeconds(t.timeMs)}
+              </td>
             </tr>
           ))}
         </tbody>
@@ -39,8 +41,9 @@ export function ToneTable({ tones }) {
   );
 }
 
-function toneType(withNoise) {
-  if (withNoise === true) return 'Noise';
-  if (withNoise === false) return 'Clear';
+// Little pill markers: Noise stands out, Clear stays quiet.
+function ToneType({ withNoise }) {
+  if (withNoise === true) return <span className="tone-badge tone-badge-noise">Noise</span>;
+  if (withNoise === false) return <span className="tone-badge tone-badge-clear">Clear</span>;
   return '—'; // not recorded (saved before step 12a)
 }

@@ -151,7 +151,7 @@ You asked for a marker for noisy tones and for tones where time ran out. The Gam
 - [x] Test: the newest 5 rounds expand and collapse. Older ones don't have the toggle. Works on a phone-width window.
 - *Might take 2 commits:* the toggle and expanding row first, then the styling.
 - **12b-1 (done):** shared `ToneTable` component (`src/game/toneTable.jsx`) used by both the Game results and the Profile; the ▸/▾ toggle with `aria-expanded`/`aria-controls`; several rounds open at once; "—" for rounds without markers; the 5-rounds note. Also fixed the Profile scrolling sideways on a phone (`main:has(#round-history) { width: 100% }`). Tested in headless Edge at desktop and 375px widths.
-- [ ] **12b-2:** styling. Little badges for the markers (noise / time's up) instead of plain words, a styled toggle button, a distinct background for the open breakdown, keep the history rows' stripes from shifting when a breakdown opens, and a tighter inner table on phones.
+- [x] **12b-2:** styling. Little badges for the markers (noise / time's up) instead of plain words, a styled toggle button, a distinct background for the open breakdown, keep the history rows' stripes from shifting when a breakdown opens, and a tighter inner table on phones.
 
 ### Step 13: Deploy
 - [ ] In Atlas **Network Access**, check that the EC2 server's IP is allowed (Simon's setup may already allow it).

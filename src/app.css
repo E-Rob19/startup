@@ -243,6 +243,149 @@ main:has(#round-history) {
   padding: 0.6rem 0.8rem;
 }
 
+/* Hand-made striping for the Profile's round rows (see profile.jsx). Uses the
+   same Bootstrap variable table-striped would set. */
+#round-history tr.round-striped > td {
+  --bs-table-bg-type: var(--bs-table-striped-bg);
+}
+
+/* Round arrow button: black outline like the rest of the site, pink when open. */
+.tone-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  border: 2px solid #222;
+  border-radius: 50%;
+  background: #fff;
+  color: #222;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.tone-toggle:hover {
+  background: #222;
+  color: #fff;
+}
+
+.tone-toggle[aria-expanded='true'] {
+  background: #f7446a;
+  border-color: #f7446a;
+  color: #fff;
+}
+
+.tone-toggle:focus-visible {
+  outline: 3px solid rgba(247, 68, 106, 0.5);
+  outline-offset: 2px;
+}
+
+.tone-toggle-arrow {
+  display: inline-block;
+  font-size: 1.2rem; /* ▸ is a small glyph, so scale it up to fill the circle */
+  transition: transform 0.15s ease;
+}
+
+.tone-toggle[aria-expanded='true'] .tone-toggle-arrow {
+  transform: rotate(90deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tone-toggle-arrow {
+    transition: none;
+  }
+}
+
+/* The open breakdown: a tinted panel holding a smaller, white tone table.
+   Resetting the two Bootstrap variables stops the outer row's stripe/hover
+   color from being inherited by every cell of the inner table. */
+#round-history tr.tone-breakdown > td {
+  --bs-table-bg: #f6eef0;
+  --bs-table-bg-type: initial;
+  --bs-table-bg-state: initial;
+  padding: 0.75rem;
+}
+
+#round-history .tone-breakdown .table-responsive {
+  border: 2px solid #222;
+  border-radius: 10px;
+  background: #fff;
+}
+
+#round-history .tone-table {
+  margin-bottom: 0;
+  font-size: 0.9rem;
+}
+
+#round-history .tone-table th,
+#round-history .tone-table td {
+  padding: 0.35rem 0.6rem;
+  white-space: nowrap; /* keep "440 Hz" on one line */
+}
+
+/* Marker pills for noise / clear / time's up (Game results and Profile). */
+.tone-badge {
+  display: inline-block;
+  padding: 0.05rem 0.55rem;
+  border: 1.5px solid transparent;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+.tone-badge-noise {
+  background: #cd3556; /* the darker brand pink: white text stays readable */
+  color: #fff;
+}
+
+.tone-badge-clear {
+  border-color: #bbb;
+  background: #fff;
+  color: #555;
+}
+
+.tone-badge-timeout {
+  background: #222;
+  color: #fff;
+}
+
+@media (max-width: 480px) {
+  #round-history table {
+    font-size: 0.85rem;
+  }
+
+  #round-history td,
+  #round-history th {
+    padding: 0.45rem 0.4rem;
+  }
+
+  .tone-toggle {
+    width: 1.75rem;
+    height: 1.75rem;
+  }
+
+  #round-history tr.tone-breakdown > td {
+    padding: 0.35rem;
+  }
+
+  #round-history .tone-table {
+    font-size: 0.75rem;
+  }
+
+  #round-history .tone-table th,
+  #round-history .tone-table td {
+    padding: 0.3rem 0.3rem;
+  }
+
+  .tone-badge {
+    font-size: 0.7rem;
+    padding: 0.05rem 0.4rem;
+  }
+}
+
 #countdown-timer {
   font-size: 1.3rem;
   font-weight: 600;

@@ -70,7 +70,10 @@ export function Profile({ userName, onSessionExpired }) {
         ) : (
           <div className="table-card">
             <div className="table-responsive">
-              <table className="table table-striped table-hover">
+              {/* Striped by hand (round-striped) instead of table-striped: Bootstrap
+                  stripes every other <tr>, so an open breakdown row would flip
+                  the stripes of every round below it. */}
+              <table className="table table-hover">
                 <thead>
                   <tr>
                     <th><span className="visually-hidden">Tones</span></th>
@@ -81,12 +84,12 @@ export function Profile({ userName, onSessionExpired }) {
                   </tr>
                 </thead>
                 <tbody>
-                  {history.map((round) => {
+                  {history.map((round, index) => {
                     const isOpen = openRounds.has(round.date);
                     const breakdownId = `tones-${round.date}`;
                     return (
                       <React.Fragment key={round.date}>
-                        <tr>
+                        <tr className={index % 2 === 0 ? 'round-striped' : undefined}>
                           <td>
                             {/* Only the newest rounds still have tones (the server prunes older ones). */}
                             {round.tones && (
@@ -98,7 +101,8 @@ export function Profile({ userName, onSessionExpired }) {
                                 aria-label={`Tone breakdown for the round on ${formatDate(round.date)}`}
                                 onClick={() => toggleRound(round.date)}
                               >
-                                {isOpen ? '▾' : '▸'}
+                                {/* One arrow that CSS turns to point down when open. */}
+                                <span className="tone-toggle-arrow" aria-hidden="true">▸</span>
                               </button>
                             )}
                           </td>
