@@ -208,6 +208,15 @@ label {
   background: #fff;
 }
 
+/* <main> is a flex child with auto margins, so it sizes itself to its widest
+   content. On the Profile that's the history table (wider still with a tone
+   breakdown open), so on a phone the whole page scrolled sideways instead of
+   the table scrolling inside its card. A fixed 100% width stops that. Only
+   here, because other pages (like Login) rely on the shrink-to-fit centering. */
+main:has(#round-history) {
+  width: 100%;
+}
+
 #round-history .table-card {
   border: 2px solid #222;
   border-radius: 16px;

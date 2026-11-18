@@ -6,6 +6,7 @@ import { ACCURACY_WEIGHT, MAX_SCORE, SPEED_WEIGHT, scoreRound } from './scoring'
 import { saveScore, UnauthorizedError } from '../services/scoreService';
 import { GameEvent, GameNotifier } from '../services/gameNotifier';
 import { formatPercent, formatSeconds } from '../format';
+import { ToneTable } from './toneTable';
 
 const TONES_PER_ROUND = 10;
 const CLEAR_TONES = 5;
@@ -343,32 +344,7 @@ export function Game({ userName, authState, onSessionExpired }) {
               only counts as much as each guess was accurate, and a guess one octave or more off counts as 0%.
             </small>
           </p>
-          <div className="table-responsive">
-            <table className="table table-striped table-hover">
-              <thead>
-                <tr>
-                  <th>Tone</th>
-                  <th>Type</th>
-                  <th>Target</th>
-                  <th>Your Guess</th>
-                  <th>Accuracy</th>
-                  <th>Time</th>
-                </tr>
-              </thead>
-              <tbody>
-                {results.tones.map((t, i) => (
-                  <tr key={i}>
-                    <td>{i + 1}</td>
-                    <td>{t.withNoise ? 'Noise' : 'Clear'}</td>
-                    <td>{t.target} Hz</td>
-                    <td>{t.guess} Hz</td>
-                    <td>{formatPercent(t.accuracy)}</td>
-                    <td>{t.timedOut ? "Time's up" : formatSeconds(t.timeMs)}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <ToneTable tones={results.tones} />
           <p id="results-actions">
             <button type="button" className="btn btn-brand" onClick={startRound}>Play Again</button>{' '}
             <NavLink to="/leaderboard" className="btn btn-outline-secondary">View Leaderboard</NavLink>

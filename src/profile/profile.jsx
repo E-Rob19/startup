@@ -2,10 +2,25 @@ import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { getHistory, UnauthorizedError } from '../services/scoreService';
 import { formatDate, formatPercent, formatSeconds } from '../format';
+import { ToneTable } from '../game/toneTable';
+
+// Matches TONE_HISTORY_SIZE in service/database.js (only for the note's wording).
+const TONE_HISTORY_SIZE = 5;
 
 export function Profile({ userName, onSessionExpired }) {
   const [history, setHistory] = React.useState(null); // null while loading
   const [loadError, setLoadError] = React.useState('');
+  // Dates of the rounds whose tone breakdown is showing. A Set, so several can be open at once.
+  const [openRounds, setOpenRounds] = React.useState(() => new Set());
+
+  function toggleRound(date) {
+    setOpenRounds((prev) => {
+      const next = new Set(prev); // a new Set, so React sees the change
+      if (next.has(date)) next.delete(date);
+      else next.add(date);
+      return next;
+    });
+  }
 
   React.useEffect(() => {
     let ignore = false;
@@ -58,6 +73,7 @@ export function Profile({ userName, onSessionExpired }) {
               <table className="table table-striped table-hover">
                 <thead>
                   <tr>
+                    <th><span className="visually-hidden">Tones</span></th>
                     <th>Date</th>
                     <th>Score</th>
                     <th>Accuracy</th>
@@ -65,18 +81,51 @@ export function Profile({ userName, onSessionExpired }) {
                   </tr>
                 </thead>
                 <tbody>
-                  {history.map((round) => (
-                    <tr key={round.date}>
-                      <td>{formatDate(round.date)}</td>
-                      <td>{round.score}</td>
-                      <td>{formatPercent(round.accuracy)}</td>
-                      <td>{formatSeconds(round.avgTimeMs)}</td>
-                    </tr>
-                  ))}
+                  {history.map((round) => {
+                    const isOpen = openRounds.has(round.date);
+                    const breakdownId = `tones-${round.date}`;
+                    return (
+                      <React.Fragment key={round.date}>
+                        <tr>
+                          <td>
+                            {/* Only the newest rounds still have tones (the server prunes older ones). */}
+                            {round.tones && (
+                              <button
+                                type="button"
+                                className="tone-toggle"
+                                aria-expanded={isOpen}
+                                aria-controls={breakdownId}
+                                aria-label={`Tone breakdown for the round on ${formatDate(round.date)}`}
+                                onClick={() => toggleRound(round.date)}
+                              >
+                                {isOpen ? '▾' : '▸'}
+                              </button>
+                            )}
+                          </td>
+                          <td>{formatDate(round.date)}</td>
+                          <td>{round.score}</td>
+                          <td>{formatPercent(round.accuracy)}</td>
+                          <td>{formatSeconds(round.avgTimeMs)}</td>
+                        </tr>
+                        {isOpen && (
+                          <tr id={breakdownId} className="tone-breakdown">
+                            <td colSpan={5}>
+                              <ToneTable tones={round.tones} />
+                            </td>
+                          </tr>
+                        )}
+                      </React.Fragment>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
           </div>
+        )}
+        {history?.length > 0 && (
+          <p className="history-note">
+            <small>Tone breakdowns are kept for your {TONE_HISTORY_SIZE} most recent rounds.</small>
+          </p>
         )}
       </section>
     </main>

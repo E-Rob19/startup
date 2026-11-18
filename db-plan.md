@@ -143,13 +143,15 @@ You asked for a marker for noisy tones and for tones where time ran out. The Gam
 - [x] Test: the step 5 test now also checks both flags are stored, and that a missing or non-boolean flag, or `timedOut` with less than the full time, → 400 with nothing saved. Steps 6–7 tests updated to the new shape and still pass. The frontend build still compiles.
 
 ### Step 12b: Per-tone breakdown on the Profile
-- [ ] In the Profile's history table, each round that still has `tones` gets an arrow toggle button (▸ / ▾) that shows or hides a row underneath with its 10 tones: target, your guess, how far off, and time. Older rounds have no toggle, just their score.
-- [ ] Markers: noise vs clear for each tone, and "Time's up" instead of a time when it ran out (the same as the Game's results table). Tones saved before step 12a don't have the flags, so they show "—".
-- [ ] Track which rounds are open in state, so several can be open at once. Use `aria-expanded` on the button for screen readers.
-- [ ] A short note under the table: "Tone breakdowns are kept for your 5 most recent rounds."
-- [ ] Reuse the Game results screen's formatting (Hz/kHz, "how far off") where it fits, instead of writing it twice.
-- [ ] Test: the newest 5 rounds expand and collapse. Older ones don't have the toggle. Works on a phone-width window.
+- [x] In the Profile's history table, each round that still has `tones` gets an arrow toggle button (▸ / ▾) that shows or hides a row underneath with its 10 tones: target, your guess, how far off, and time. Older rounds have no toggle, just their score.
+- [x] Markers: noise vs clear for each tone, and "Time's up" instead of a time when it ran out (the same as the Game's results table). Tones saved before step 12a don't have the flags, so they show "—".
+- [x] Track which rounds are open in state, so several can be open at once. Use `aria-expanded` on the button for screen readers.
+- [x] A short note under the table: "Tone breakdowns are kept for your 5 most recent rounds."
+- [x] Reuse the Game results screen's formatting (Hz/kHz, "how far off") where it fits, instead of writing it twice.
+- [x] Test: the newest 5 rounds expand and collapse. Older ones don't have the toggle. Works on a phone-width window.
 - *Might take 2 commits:* the toggle and expanding row first, then the styling.
+- **12b-1 (done):** shared `ToneTable` component (`src/game/toneTable.jsx`) used by both the Game results and the Profile; the ▸/▾ toggle with `aria-expanded`/`aria-controls`; several rounds open at once; "—" for rounds without markers; the 5-rounds note. Also fixed the Profile scrolling sideways on a phone (`main:has(#round-history) { width: 100% }`). Tested in headless Edge at desktop and 375px widths.
+- [ ] **12b-2:** styling. Little badges for the markers (noise / time's up) instead of plain words, a styled toggle button, a distinct background for the open breakdown, keep the history rows' stripes from shifting when a breakdown opens, and a tighter inner table on phones.
 
 ### Step 13: Deploy
 - [ ] In Atlas **Network Access**, check that the EC2 server's IP is allowed (Simon's setup may already allow it).
