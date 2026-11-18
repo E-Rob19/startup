@@ -158,7 +158,7 @@ You asked for a marker for noisy tones and for tones where time ran out. The Gam
 - [x] Check `node -v` on the server is 20.19 or newer (the `mongodb` 7 driver requires it). *(It is: the driver loaded and ran.)*
 - [x] Deploy (you, by hand): `./deployService.sh -k <key> -h earshot.click -s startup`.
 - **Found on the first deploy:** the live server saved to a database named **`startup`**, not `earshot`. The server's pm2 setup starts it with an extra argument (the service name), and step 2's code took the 3rd argument as the database name. Account `panda` and its round were stored correctly, just in the wrong database. **Fix:** the database is now picked by an explicit flag, `process.argv.includes('--dev') ? 'earshot-dev' : 'earshot'`, and `npm run dev` runs `node index.js 4000 --dev`. Also deleted a stray `emma` test account + round from `earshot` (made by a local run without the dev argument). The orphaned `startup` database is left alone for now.
-- [ ] Redeploy with the fix, then re-check: the live leaderboard should show only the 7 sample players until you play, and new accounts should land in `earshot`.
+- [x] Redeploy with the fix, then re-check: the live leaderboard should show only the 7 sample players until you play, and new accounts should land in `earshot`. *(Verified: `panda` (score 207) is in `earshot` with a bcrypt hash, an active session token, and 10 tones with markers; the live leaderboard matches `earshot` exactly; `startup` got nothing new.)*
 - [ ] Test on the live site (https://startup.earshot.click): create an account, play a round, then redeploy (or `pm2 restart startup`) and confirm the account, the round, and the leaderboard entry are all still there. That's the real proof for this deliverable.
 
 ### Step 14: Write-up
