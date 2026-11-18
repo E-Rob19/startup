@@ -43,7 +43,7 @@ async function sendScoreRequest(method, path, body) {
   return data;
 }
 
-// tones: [{ target, guess, timeMs }, ...] for all 10 tones of the round.
+// tones: [{ target, guess, timeMs, withNoise, timedOut }, ...] for all 10 tones of the round.
 // Returns the saved entry { name, score, accuracy, avgTimeMs, date }, with
 // the score as computed by the server.
 export async function saveScore(tones) {

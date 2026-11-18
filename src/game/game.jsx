@@ -160,9 +160,16 @@ export function Game({ userName, authState, onSessionExpired }) {
 
   // Saves a finished round for the logged-in player. Only the raw per-tone
   // results are sent; the server computes the score itself and returns the
-  // saved entry, which is what gets announced on the live feed.
+  // saved entry, which is what gets announced on the live feed. withNoise and
+  // timedOut aren't scored; they're stored for the Profile's tone breakdown.
   async function saveRound(finalGuesses) {
-    const tones = finalGuesses.map(({ target, guess, timeMs }) => ({ target, guess, timeMs }));
+    const tones = finalGuesses.map(({ target, guess, timeMs, withNoise, timedOut }) => ({
+      target,
+      guess,
+      timeMs,
+      withNoise,
+      timedOut,
+    }));
     setSaveStatus('saving');
     try {
       const entry = await saveScore(tones);

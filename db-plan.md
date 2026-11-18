@@ -135,8 +135,16 @@ There is one commit per step, about 15 in all, which covers the 12-commit goal. 
   - **Shutdown:** SIGINT during a sign-up → the sign-up still finishes (200), new requests are refused, both closed, exit code 0.
   - *You (optional):* turn off Wi-Fi with `npm run dev` running and open the Leaderboard. After ~5 s you get "Can't reach the server", and the terminal shows `MongoServerSelectionError`.
 
-### Step 12: Per-tone breakdown on the Profile
+### Step 12a: Store noise and time-out markers for each tone (added)
+You asked for a marker for noisy tones and for tones where time ran out. The Game already knew both, but it removed them before sending.
+- [x] `game.jsx` sends `{ target, guess, timeMs, withNoise, timedOut }` for each tone.
+- [x] `service/scoring.js` `isValidRound`: both must be real booleans, and `timedOut: true` requires `timeMs` to equal the 10 s limit (the Game always records it that way). Anything else → 400. They aren't used for scoring.
+- [x] `service/index.js` stores all 5 fields per tone (still rebuilt field by field, so junk isn't stored).
+- [x] Test: the step 5 test now also checks both flags are stored, and that a missing or non-boolean flag, or `timedOut` with less than the full time, → 400 with nothing saved. Steps 6–7 tests updated to the new shape and still pass. The frontend build still compiles.
+
+### Step 12b: Per-tone breakdown on the Profile
 - [ ] In the Profile's history table, each round that still has `tones` gets an arrow toggle button (▸ / ▾) that shows or hides a row underneath with its 10 tones: target, your guess, how far off, and time. Older rounds have no toggle, just their score.
+- [ ] Markers: noise vs clear for each tone, and "Time's up" instead of a time when it ran out (the same as the Game's results table). Tones saved before step 12a don't have the flags, so they show "—".
 - [ ] Track which rounds are open in state, so several can be open at once. Use `aria-expanded` on the button for screen readers.
 - [ ] A short note under the table: "Tone breakdowns are kept for your 5 most recent rounds."
 - [ ] Reuse the Game results screen's formatting (Hz/kHz, "how far off") where it fits, instead of writing it twice.

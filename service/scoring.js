@@ -40,7 +40,9 @@ function isNumberBetween(value, min, max) {
 }
 
 // True if `tones` is exactly one round's worth of believable results:
-// [{ target, guess, timeMs }, ...] × TONES_PER_ROUND, every value in range.
+// [{ target, guess, timeMs, withNoise, timedOut }, ...] × TONES_PER_ROUND,
+// every value in range. withNoise and timedOut aren't used for scoring; they're
+// stored so the Profile's breakdown can mark noisy and timed-out tones.
 function isValidRound(tones) {
   return (
     Array.isArray(tones) &&
@@ -51,7 +53,11 @@ function isValidRound(tones) {
         typeof tone === 'object' &&
         isNumberBetween(tone.target, MIN_TARGET_FREQ, MAX_TARGET_FREQ) &&
         isNumberBetween(tone.guess, MIN_GUESS_FREQ, MAX_GUESS_FREQ) &&
-        isNumberBetween(tone.timeMs, 0, TIME_LIMIT_MS)
+        isNumberBetween(tone.timeMs, 0, TIME_LIMIT_MS) &&
+        typeof tone.withNoise === 'boolean' &&
+        typeof tone.timedOut === 'boolean' &&
+        // A timed-out tone always counts the full time limit (see game.jsx).
+        (!tone.timedOut || tone.timeMs === TIME_LIMIT_MS)
     )
   );
 }

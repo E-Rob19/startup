@@ -140,11 +140,17 @@ apiRouter.post('/score', verifyAuth, async (req, res) => {
   const entry = { name: req.user.userName, score, accuracy, avgTimeMs };
 
   // Saved to MongoDB with the per-tone results. Each tone is rebuilt with only
-  // the three known fields, so extra junk sent in the request isn't stored.
+  // the known fields, so extra junk sent in the request isn't stored.
   await DB.addScore({
     ...entry,
     date,
-    tones: tones.map(({ target, guess, timeMs }) => ({ target, guess, timeMs })),
+    tones: tones.map(({ target, guess, timeMs, withNoise, timedOut }) => ({
+      target,
+      guess,
+      timeMs,
+      withNoise,
+      timedOut,
+    })),
   });
 
   // Same shape as before (no _id, no tones), so the Game page is unchanged.
